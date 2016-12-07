@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@android:color/background_light"
+    android:orientation="vertical"
+    android:weightSum="1">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:text="@string/terminarencuesta"
+        android:textSize="25sp" />
+    <!-- Button Aceptar -->
+    <Button android:id="@+id/ButtonFinalizar"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:layout_marginTop="50dp"
+        android:layout_gravity="center"
+        android:text="@string/aceptar"/>
+    <!-- Button Aceptar -->
+<!--    <Button android:id="@+id/ButtonSiguiente"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="65dp"
+        android:layout_gravity="center"
+        android:text="@string/siguienteencuesta"/>-->
+
+</LinearLayout>

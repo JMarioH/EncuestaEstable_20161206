@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">PopResearch Encuestas 1.3</string>
+    <string name="title_activity_encuesta">Encuesta</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="tienda">7</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_enviar">Enviar</string>
+    <string name="title_activity_main_activity1">MainActivity1</string>
+    <string name="Arrancar">Login</string>
+    <string name="Configurar">Fotos</string>
+    <string name="Acercade">Ver</string>
+    <string name="Salir">Salir</string>
+    <string name="Respuestas">Respuestas</string>
+    <string name="Password">Password</string>
+    <string name="Usuario">Usuario</string>
+    <string name="Login">Login</string>
+    <string name="title_activity_login3">login3</string>
+    <string name="action_search">Buscar</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="home">Inicio</string>
+    <string name="seleccione">- - - Seleccione - - -</string>
+    <string name="siguiente">Siguiente</string>
+    <string name="clientes">Clientes</string>
+    <string name="proyectos">Proyectos</string>
+    <string name="tipoencuesta">Tipo encuesta</string>
+    <string name="encuesta">Encuesta</string>
+    <string name="sync">Sync</string>
+    <string name="encuestaspendientes">Encuestas pendientes</string>
+    <string name="fotosPendientes">Subir Fotos pendientes</string>
+    <string name="uploadfile">Subir archivo</string>
+    <string name="terminarencuesta">¿Deseas terminar la encuesta?</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="siguienteencuesta">Siguiente encuesta</string>
+    <string name="encuestas">Encuestas</string>
+    <string name="tomarfoto">Tomar foto</string>
+    <string name="sinfoto">Sin foto</string>
+    <string name="encuestaterminada">Encuesta terminada</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+
+</resources>

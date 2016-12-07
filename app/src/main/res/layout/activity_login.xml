@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="20dip"
+    android:id="@+id/layout1"
+    android:background="#FFFFFF"
+    tools:context=".Login"
+    android:weightSum="1">
+
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#372c24"
+        android:layout_marginTop="5dip"
+        android:text="@string/Usuario"
+        android:textSize="21sp" />
+
+    <EditText android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:layout_marginBottom="20dip"
+        android:lines="1"
+        android:id="@+id/edusuario"
+        android:text="5572523607"
+        android:textColor="@android:color/black"
+        android:layout_weight="0.05"
+        android:inputType="text" />
+
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#372c24"
+        android:text="@string/Password"
+        android:textSize="21sp" />
+
+    <EditText android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dip"
+        android:text="foo"
+        android:id="@+id/edpassword"
+        android:textColor="@android:color/black"
+        android:layout_weight="0.05"
+        android:inputType="textPassword" />
+
+    <Button
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:onClick="login"
+        android:text="@string/Login"
+        android:id="@+id/Blogin"
+        android:textAllCaps="false"
+       />
+
+</LinearLayout>

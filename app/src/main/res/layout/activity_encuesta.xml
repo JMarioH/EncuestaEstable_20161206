@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".Encuesta2">
+
+    <TextView
+        android:id="@+id/product_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textSize="17sp"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/respuestaLibre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/select_colours"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="@string/seleccione" />
+
+    <Spinner
+        android:id="@+id/CmbOpciones"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@android:color/darker_gray"
+        android:focusableInTouchMode="true"
+        android:prompt="@string/Respuestas" />
+
+    <TextView
+        android:id="@+id/LblMensaje"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/siguiente" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dip"
+        android:text=""
+        android:textColor="@android:color/black" />
+</LinearLayout>
