@@ -171,6 +171,7 @@ public class Enviar extends Activity {
             //encuestas
             db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
             db.deletesTablaRealizandoEncuesta();
+
             Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200);
@@ -277,14 +278,12 @@ public class Enviar extends Activity {
             if (txtPendientes.equals("1")) {
                 geoEstatica.reset();
                 Toast.makeText(getApplicationContext(), "Encuesta enviada al server exitosamente", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
                 // terminando de enviar las encuestas envia las fotos
                 enviaFotos();
                 db.deleteGeosTable();
                 pDialog.dismiss();
                 pDialog.hide();
-                //TODO Aqui enviamos el proceso a Principal 2 como unicio. en ligar de la clase Salir
+                //TODO Aqui enviamos el proceso a Principal 2 como unicio. en lUgar de la clase Salir
                 Intent i = new Intent(Enviar.this, Principal2.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.putExtras(bundle);
@@ -294,8 +293,6 @@ public class Enviar extends Activity {
                 pDialog.dismiss();
                 pDialog.hide();
                 Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
                 //TODO aqui viajaba a Salir.java
                 Intent i = new Intent(Enviar.this, Principal2.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

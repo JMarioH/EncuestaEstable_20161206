@@ -113,9 +113,8 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
 
           /* obtenemos la geolocalizacion */
         gpsTracker = new GPSTracker(this);
-
         geoEstatica = new GeoEstatica().getInstance();
-        Log.e(TAG,"geoEstatus " + geoEstatica.ismEstatus());
+
 
         if (geoEstatica.ismEstatus()==false) {
             geoEstatica.setmEstatus(true);
@@ -124,11 +123,13 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
 
             newLatitud = geoEstatica.getsLatitud();
             newlongitud = geoEstatica.getsLongitud();
+
             GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
             db.insertGeos(geoRegister);
         }else{
             newLatitud = geoEstatica.getsLatitud();
             newlongitud = geoEstatica.getsLongitud();
+
             GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
             db.insertGeos(geoRegister);
 

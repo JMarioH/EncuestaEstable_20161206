@@ -15,6 +15,7 @@ import DB.Dao;
  * Created by Admin on 29/09/2015.
  */
 public class FinEncuesta extends AppCompatActivity {
+
     String TAG = getClass().getSimpleName();
     Bundle bundle =  new Bundle();
     String id_ArchivoSeleccionado;
@@ -22,8 +23,6 @@ public class FinEncuesta extends AppCompatActivity {
     String id_tiendaSeleccionada;
     String mobile;
     Button btonAceptar;
-    Button btonSiguiente;
-
     String id_preguntaAnterior;
     //DB
     Dao db;
@@ -47,11 +46,8 @@ public class FinEncuesta extends AppCompatActivity {
         mobile = extras.getString("mobile");
         bundle.putString("mobile", mobile);
 
-        //Action`s button Aceptar
+
         btonAceptar = (Button) findViewById(R.id.ButtonFinalizar);
-        //Actions button Siguiente
-        //btonSiguiente = (Button) findViewById(R.id.ButtonSiguiente);
-        //Aceptar
         btonAceptar.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
 

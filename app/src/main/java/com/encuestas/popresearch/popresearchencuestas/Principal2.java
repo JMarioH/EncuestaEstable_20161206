@@ -53,6 +53,7 @@ import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
 
 import static android.R.attr.x;
+import static com.encuestas.popresearch.popresearchencuestas.LoginUser.usuario;
 
 /**
  * Created by Admin on 29/09/2015.
@@ -114,7 +115,8 @@ public class Principal2 extends AppCompatActivity {
     String telefono = "";
     String txtPendientes = "";
     String txtsync = "";
-    String usuario = Login.usuario2;
+    //String usuario = Login.usuario2;
+    String usuario = LoginUser.usuario;
     TextView lblMensaje;
     LoginEntity loginEntity;
     //Lista encuestaResultadosPre
@@ -151,9 +153,9 @@ public class Principal2 extends AppCompatActivity {
         btnuploadPhoto = (Button) findViewById(R.id.btnuploadPhoto);
         bEncuestasPendientes = (Button) findViewById(R.id.ButtonEncuestasPendientes);
         bEncuestasPendientes.setVisibility(View.INVISIBLE);
-        bsync = (Button) findViewById(R.id.ButtonSync);
 
         lblMensaje = (TextView) findViewById(R.id.LblMensaje);
+
         try {
             if (usuario != null) {
                 loginEntity.setUsuario(usuario);
@@ -181,7 +183,7 @@ public class Principal2 extends AppCompatActivity {
         if (telefono != null) {
             lblMensaje.setEllipsize(TextUtils.TruncateAt.END);
             lblMensaje.setSingleLine(true);
-            lblMensaje.setText("Teléfono :  " + telefono);
+            lblMensaje.setText("Teléfono : " + telefono);
             //Se inserta en telefono del usuario en el Bundle
             bundle.putString("telefonoUsuario", telefono);
         }
@@ -200,7 +202,8 @@ public class Principal2 extends AppCompatActivity {
                         e.getCause();
                     }
 
-                    Intent intent = new Intent(Principal2.this, Login.class);
+                    Intent intent = new Intent(Principal2.this, LoginUser.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     startActivity(intent);
                 }else{
                     Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
@@ -233,13 +236,6 @@ public class Principal2 extends AppCompatActivity {
             }
         });
 
-        //Enviar Encuestas sync
-        bsync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new asyncEncuestasServer().execute();
-            }
-        });
 
         //Revisando si existen encuestas pendientes (Se muestra el boton de en encuestasPendientes)
         try {
@@ -991,45 +987,6 @@ public class Principal2 extends AppCompatActivity {
     }
 
     /////sync//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class asyncEncuestasServer extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            //para el progress dialog
-            pDialog = new ProgressDialog(Principal2.this);
-            pDialog.setMessage("Sync con server");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-            boolean connecTionAvailable = isNetworkAvailable();
-            if (connecTionAvailable) {
-                txtsync = "1";
-            } else {
-                txtsync = "0";
-            }
-            //txtsync = "1";
-            return txtsync;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            pDialog.dismiss();
-            if (txtsync.equals("1")) {
-                Toast.makeText(Principal2.this, "Se sincronizo correctamente con el Servidor", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
-            } else {
-                Toast.makeText(Principal2.this, "No hay conexion, intentalo mas tarde.", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
-            }
-            Intent intent = new Intent(Principal2.this, Principal2.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

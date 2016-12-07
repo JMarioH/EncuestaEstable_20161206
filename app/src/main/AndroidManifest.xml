@@ -27,7 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity android:name=".Login"
             android:screenOrientation="portrait">
         </activity>
@@ -49,10 +48,11 @@
         <activity android:name=".Enviar"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".Salir"
+        <activity android:name=".FinEncuesta"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".FinEncuesta"
+        <!-- TODO Login  -->
+        <activity android:name=".LoginUser"
             android:screenOrientation="portrait">
         </activity>
 

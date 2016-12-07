@@ -13,19 +13,12 @@
         android:gravity="center"
         android:text="@string/terminarencuesta"
         android:textSize="25sp" />
-    <!-- Button Aceptar -->
+
     <Button android:id="@+id/ButtonFinalizar"
         android:layout_width="match_parent"
         android:layout_height="65dp"
         android:layout_marginTop="50dp"
         android:layout_gravity="center"
         android:text="@string/aceptar"/>
-    <!-- Button Aceptar -->
-<!--    <Button android:id="@+id/ButtonSiguiente"
-        android:layout_width="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_height="65dp"
-        android:layout_gravity="center"
-        android:text="@string/siguienteencuesta"/>-->
 
 </LinearLayout>

@@ -57,7 +57,6 @@ public class Foto extends AppCompatActivity {
     private int permissionCheck  ;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +77,6 @@ public class Foto extends AppCompatActivity {
 
         id_ArchivoSeleccionado = extras.getString("id_archivoSeleccionado");
         bundle.putString("id_archivoSeleccionado", id_ArchivoSeleccionado);
-        Log.e(TAG,"archivoSeleccionado "+ id_ArchivoSeleccionado);
         id_encuestaSeleccionada = extras.getString("id_encuestaSeleccionada");
         bundle.putString("id_encuestaSeleccionada", id_encuestaSeleccionada);
 
@@ -120,11 +118,12 @@ public class Foto extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
         /* Tomar foto*/
-            if(permissionCheck == -1) {
-                Toast.makeText(getBaseContext(),"Debe proporcionar permisos para usar la camara ",Toast.LENGTH_LONG).show();
-            }
-            btonFoto = (Button) findViewById(R.id.btnFoto);
+        if(permissionCheck == -1) {
+            Toast.makeText(getBaseContext(),"Debe proporcionar permisos para usar la camara ",Toast.LENGTH_LONG).show();
+        }
+        btonFoto = (Button) findViewById(R.id.btnFoto);
 
             btonFoto.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -142,10 +141,7 @@ public class Foto extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-       permissionCheck = ContextCompat.checkSelfPermission(Foto.this,
-                Manifest.permission.CAMERA);
-
+       permissionCheck = ContextCompat.checkSelfPermission(Foto.this,Manifest.permission.CAMERA);
     }
     //Open
     public void open() {
