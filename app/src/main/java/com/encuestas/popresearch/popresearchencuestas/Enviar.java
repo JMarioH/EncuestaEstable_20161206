@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -26,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import AsynckData.Conexiones;
+import DB.Dao;
 import Entity.FotoEncuesta;
 import Entity.FotoStrings;
 import Entity.GeoEstatica;
@@ -34,7 +34,6 @@ import Entity.RealizandoEncuestaEntity;
 import Utility.Connectivity;
 import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
-import DB.Dao;
 
 /**
  * Created by Admin on 29/09/2015.
@@ -105,12 +104,11 @@ public class Enviar extends Activity {
         boolean connecTionAvailable = isNetworkAvailable();
 
         if (connecTionAvailable) {
-            Log.e(TAG,"connectionAvailable true");
+
             // si tenemos internet enviamos
 
             if (validaRed == true) {
 
-                Log.e(TAG,"valida true");
                  /*
                  * Enviamos las encuestas
                  */
@@ -144,7 +142,7 @@ public class Enviar extends Activity {
                 new async().execute();
 
             }else{ // si no hay red guardamos localmente
-                Log.e(TAG,"valdia false" + validaRed);
+
                 geoEstatica.reset();
 
                 //encuestas
@@ -174,7 +172,7 @@ public class Enviar extends Activity {
                 }
             }
         }else{
-            Log.e(TAG,"connectionAvailable false");
+
             geoEstatica.reset();
             //encuestas
             db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
@@ -259,11 +257,9 @@ public class Enviar extends Activity {
                 envelope.dotNet = true;
                 envelope.setOutputSoapObject(request);
                 HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
-                Log.e(TAG,"androidHttpTransport" + androidHttpTransport);
-
                 androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
                 response = (SoapPrimitive) envelope.getResponse(); //get the response from your webservice
-                Log.e(TAG,"response " + response);
+
                 if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
                     txtPendientes = response.toString();
                 } else {                                // si los datos no subieron
