@@ -100,8 +100,8 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_encuesta);
 
-
         Bundle extras = getIntent().getExtras();
+
         contadorPreguntas = Integer.parseInt(extras.getString("contadorPreguntas"));
         id_ArchivoSeleccionado = extras.getString("id_archivoSeleccionado");
         bundle.putString("id_archivoSeleccionado", id_ArchivoSeleccionado);
@@ -109,8 +109,6 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
         bundle.putString("id_encuestaSeleccionada", id_encuestaSeleccionada);
         id_tiendaSeleccionada = extras.getString("id_tiendaSeleccionada");
         bundle.putString("id_tiendaSeleccionada", id_tiendaSeleccionada);
-
-
           /* obtenemos la geolocalizacion */
         gpsTracker = new GPSTracker(this);
         geoEstatica = new GeoEstatica().getInstance();
@@ -120,24 +118,17 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
             geoEstatica.setmEstatus(true);
             geoEstatica.setsLatitud(gpsTracker.getLatitude());
             geoEstatica.setsLongitud(gpsTracker.getLongitude());
-
             newLatitud = geoEstatica.getsLatitud();
             newlongitud = geoEstatica.getsLongitud();
 
             GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
             db.insertGeos(geoRegister);
-        }else{
-            newLatitud = geoEstatica.getsLatitud();
-            newlongitud = geoEstatica.getsLongitud();
-
-            GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
-            db.insertGeos(geoRegister);
-
         }
 
         mobile = extras.getString("mobile");
         bundle.putString("mobile", mobile);
         sig_pregunta = extras.getString("sig_pregunta");
+
         cmbOpciones = (Spinner) findViewById(R.id.CmbOpciones);
         lblMensaje = (TextView) findViewById(R.id.LblMensaje);
         txtProduct = (TextView) findViewById(R.id.product_label);
@@ -279,7 +270,6 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
                     id_preguntaAnterior = id_pregunta;
                     //insertamos la pregunta en el bundle en el caso que se quiera borrar.
                     bundle.putString("id_preguntaAnterior", id_preguntaAnterior);
-
                     try {
                         listaIdRespuesta_sigPregunta = db.getIdSiguientePregunta_idRespuesta(replySelected, id_pregunta);
                     } catch (Exception e) {
@@ -289,7 +279,8 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
 
                     sig_pregunta = listaIdRespuesta_sigPregunta.get(1);
                     id_respuesta = listaIdRespuesta_sigPregunta.get(0);
-                    //Inserting id_respuesta into the ListRespuestasFinales solo si el id_respuesta es diferente a 1875 (respuesta libre) y si no es multiple
+                    //Inserting id_respuesta into the ListRespuestasFinales;
+                    // solo si el id_respuesta es diferente a 1875 (respuesta libre) y si no es multiple
                     if (!id_respuesta.trim().equals("1875") && !multiple.equals("1")) {    //&&multiple.equals("0")
                         //Se insertan en la tabla de REALIZANDO ENCUESTA (solo si no es una respuesta abierta)
                         RealizandoEncuestaEntity realizandoEncuestaEntity = new RealizandoEncuestaEntity();
@@ -308,11 +299,12 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
                         db.addRealizandoEncuesta(realizandoEncuestaEntity);
                     }
                     bundle.putString("sig_pregunta", sig_pregunta);
-                    //checando que sea una respuesta libre () para meterla a la tabla local de respuestas libres
+                    //checando que sea una respuesta libre  para meterla a la tabla local de respuestas libres
                     if (id_respuesta.trim().equals("1875")) {
                         String textoObtenido = Encuesta2.this.campoLibre.getText().toString();
                         if (!textoObtenido.equals("")) {
-                            //Creating the obj RealizandoEncuestaEntity for setting values and store it at the table REALIZANDO ENCUESTA
+                            //Creating the obj RealizandoEncuestaEntity
+                            // for setting values and store it at the table REALIZANDO ENCUESTA
                             RealizandoEncuestaEntity realizandoEncuestaEntity = new RealizandoEncuestaEntity();
                             realizandoEncuestaEntity.setId_encuestaRealizandoEncuesta(id_encuestaSeleccionada);
                             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -329,7 +321,8 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
 
                         } else {
 
-                            //Creating the obj RealizandoEncuestaEntity for setting values and store it at the table REALIZANDO ENCUESTA
+                            //Creating the obj RealizandoEncuestaEntity for setting
+                            // values and store it at the table REALIZANDO ENCUESTA
                             RealizandoEncuestaEntity realizandoEncuestaEntity = new RealizandoEncuestaEntity();
                             realizandoEncuestaEntity.setId_encuestaRealizandoEncuesta(id_encuestaSeleccionada);
                             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -410,7 +403,6 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
     }
 
     //Function  that shows the checkBoxes list
-
     // multiple seleccion
     protected void opcionMultipleDialog() {
 
@@ -472,6 +464,7 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
         lblMensaje.setEllipsize(TextUtils.TruncateAt.END);
         lblMensaje.setSingleLine(true);
     }
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Bundle extras = getIntent().getExtras();
@@ -497,6 +490,4 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

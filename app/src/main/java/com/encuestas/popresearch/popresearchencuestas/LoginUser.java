@@ -32,7 +32,7 @@ public class LoginUser extends AppCompatActivity {
     String TAG = getClass().getSimpleName();
     ProgressDialog pDialog;
     EditText editUser , editPassword;
-    String  password;
+    public String  password;
     public static String usuario;
     Bundle bundle;
     String URL;
@@ -55,6 +55,9 @@ public class LoginUser extends AppCompatActivity {
     public void login(View v){
         usuario = editUser.getText().toString();
         password = editPassword.getText().toString();
+
+        Log.e(TAG,"usuario onclick : " + usuario);
+        Log.e(TAG,"password onclick : " + password);
         new LoginAsynck().execute();
     }
     public class LoginAsynck extends AsyncTask<String,String,String> {
@@ -93,11 +96,12 @@ public class LoginUser extends AppCompatActivity {
             data.add(new BasicNameValuePair("f", "login"));
             data.add(new BasicNameValuePair("usuario", usuario));
             data.add(new BasicNameValuePair("password", password));
-
+            Log.e(TAG,"data" + data.toString());
+            Log.e(TAG,"url" + URL);
             try{
                 ServiceHandler jsonParser = new ServiceHandler();
                 String jsonRes = jsonParser.makeServiceCall(URL, ServiceHandler.POST, data);
-
+                Log.e(TAG,"jsonRes" + jsonRes);
                 JSONObject jsonObject = new JSONObject(jsonRes);
                 JSONObject result = jsonObject.getJSONObject("result");
                 Log.e(TAG,"result"+ result);

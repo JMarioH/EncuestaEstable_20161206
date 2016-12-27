@@ -103,9 +103,14 @@ public class Enviar extends Activity {
         fotoEncuesta = new FotoEncuesta().getInstace();
         // si hay fotos para enviar
         boolean connecTionAvailable = isNetworkAvailable();
+
         if (connecTionAvailable) {
+            Log.e(TAG,"connectionAvailable true");
             // si tenemos internet enviamos
+
             if (validaRed == true) {
+
+                Log.e(TAG,"valida true");
                  /*
                  * Enviamos las encuestas
                  */
@@ -139,11 +144,13 @@ public class Enviar extends Activity {
                 new async().execute();
 
             }else{ // si no hay red guardamos localmente
+                Log.e(TAG,"valdia false" + validaRed);
                 geoEstatica.reset();
 
                 //encuestas
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
                 db.deletesTablaRealizandoEncuesta();
+
                 Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(200);
@@ -167,18 +174,13 @@ public class Enviar extends Activity {
                 }
             }
         }else{
+            Log.e(TAG,"connectionAvailable false");
             geoEstatica.reset();
             //encuestas
             db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
             db.deletesTablaRealizandoEncuesta();
 
-            Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
-            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(200);
-            Intent i = new Intent(Enviar.this, Principal2.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            i.putExtras(bundle);
-            startActivity(i);
+
             // fotos
             int x = 0;
             if (fotoEncuesta.getNombre() != null) {
@@ -192,8 +194,15 @@ public class Enviar extends Activity {
                     base64 = fotoEncuesta.getArrayFotos().get(x);
                     db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
                 }
-
             }
+
+            Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
+            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(200);
+            Intent i = new Intent(Enviar.this, Principal2.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            i.putExtras(bundle);
+            startActivity(i);
         }
     }
     public void enviaFotos(){
@@ -242,6 +251,7 @@ public class Enviar extends Activity {
         }
 
         protected String doInBackground(String... params) {
+            txtPendientes = "0";
             try {
                 request = new SoapObject(NAMESPACE, METHOD_NAME);
                 request.addProperty("cadena_json", jsonArray.toString());
@@ -249,26 +259,17 @@ public class Enviar extends Activity {
                 envelope.dotNet = true;
                 envelope.setOutputSoapObject(request);
                 HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
+                Log.e(TAG,"androidHttpTransport" + androidHttpTransport);
+
                 androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
                 response = (SoapPrimitive) envelope.getResponse(); //get the response from your webservice
-
+                Log.e(TAG,"response " + response);
                 if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
-                    pDialog.dismiss();
-                    db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
-                    flagenvio = 1;
-                    db.deletesTablaRealizandoEncuesta();
-                    db.deletesRecordsTable_encuestasResultadosPre();
                     txtPendientes = response.toString();
                 } else {                                // si los datos no subieron
-                    db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-                    db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-                    db.deletesTablaRealizandoEncuesta();
                     txtPendientes = "0";
-                    flagenvio = 0;
                 }
-
             } catch (Exception e) {
-                // Log.e("log_tag", "Error in rNewVersion.php connection "+e.toString());
                 e.printStackTrace();
             }
             return txtPendientes;
@@ -281,6 +282,10 @@ public class Enviar extends Activity {
                 // terminando de enviar las encuestas envia las fotos
                 enviaFotos();
                 db.deleteGeosTable();
+                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
+                db.deletesTablaRealizandoEncuesta();
+                db.deletesRecordsTable_encuestasResultadosPre();
+
                 pDialog.dismiss();
                 pDialog.hide();
                 //TODO Aqui enviamos el proceso a Principal 2 como unicio. en lUgar de la clase Salir
@@ -290,9 +295,12 @@ public class Enviar extends Activity {
                 startActivity(i);
             }else{
                 geoEstatica.reset();
+                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
+                db.deletesTablaRealizandoEncuesta();
                 pDialog.dismiss();
                 pDialog.hide();
-                Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "No se pudieron enviar los datos", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Encuesta guardada localmente ", Toast.LENGTH_LONG).show();
                 //TODO aqui viajaba a Salir.java
                 Intent i = new Intent(Enviar.this, Principal2.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

@@ -137,7 +137,6 @@ public class Foto extends AppCompatActivity {
             });
 
     } //Ends onCreate
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -170,7 +169,7 @@ public class Foto extends AppCompatActivity {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
                     File file = new File(Environment.getExternalStorageDirectory(), "/ImagenesEncuesta/" + id_encuestaSeleccionada + "/" + id_tiendaSeleccionada); //   990456 / id_tiendaSeleccionada
                     String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
 

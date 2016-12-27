@@ -65,6 +65,7 @@ public class HiScreen extends AppCompatActivity {
         bundle.putString("contadorPreguntas", "0");
         //passing sig_pregunta to the bundle se llama a si mismo y en primera instancia necesita este parametro.
         bundle.putString("sig_pregunta", "0");
+
         EncuestaList = new ArrayList<HiScreenEntity>();
 
         try{
@@ -118,11 +119,11 @@ public class HiScreen extends AppCompatActivity {
             //limpimos la base de antes de cargar nuevos datos
             db.deletesTablaRealizandoEncuesta();
             //checking if PreguntasEncuestasSeleccionada and RespuestasEncuestaSeleccionada
-            int countRowsPreguntasEncuestaMobileIdTiendaSelected = db.getCountTABLE_PREGUNTAS_ENCUESTA();
-            Log.e(TAG,"count Preguntas" + countRowsPreguntasEncuestaMobileIdTiendaSelected);
+   /*         int countRowsPreguntasEncuestaMobileIdTiendaSelected = db.getCountTABLE_PREGUNTAS_ENCUESTA();
+            Log.e(TAG,"count Preguntas : " + countRowsPreguntasEncuestaMobileIdTiendaSelected);
             //Checking if RespuestasEncuestasSeleccionada
             int countRowsRespuestasEncuestaMobileIdTiendaSelected = db.getCountTABLE_RESPUESTAS_ENCUESTA();
-            Log.e(TAG,"count REspuesta" + countRowsRespuestasEncuestaMobileIdTiendaSelected);
+            Log.e(TAG,"count REspuesta : " + countRowsRespuestasEncuestaMobileIdTiendaSelected);*/
 
             db.deletesRecordsTable_TABLE_PREGUNTAS_ENCUESTA();
             db.getPreguntasEncuestaSelectedIntoTable(id_encuestaSeleccionada);

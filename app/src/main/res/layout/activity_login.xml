@@ -10,7 +10,6 @@
     tools:context=".Login"
     android:weightSum="1">
 
-
     <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textColor="#372c24"
@@ -24,11 +23,9 @@
         android:layout_marginBottom="20dip"
         android:lines="1"
         android:id="@+id/edusuario"
-        android:text="5572523607"
         android:textColor="@android:color/black"
         android:layout_weight="0.05"
-        android:inputType="text" />
-
+        android:inputType="number" />
 
     <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -39,7 +36,6 @@
     <EditText android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
-        android:text="foo"
         android:id="@+id/edpassword"
         android:textColor="@android:color/black"
         android:layout_weight="0.05"
@@ -55,5 +51,4 @@
         android:id="@+id/Blogin"
         android:textAllCaps="false"
        />
-
 </LinearLayout>

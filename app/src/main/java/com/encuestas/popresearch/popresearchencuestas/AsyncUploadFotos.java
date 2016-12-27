@@ -49,12 +49,12 @@ class AsyncUploadFotos extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean s) {
         super.onPostExecute(s);
-
-        if(count == mContador) {
-            Toast.makeText(context, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show();
-        }
         pDialog.hide();
         pDialog.dismiss();
+        if(s) {
+           Toast.makeText(context, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
 

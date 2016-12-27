@@ -49,9 +49,7 @@ public class Proyectos extends AppCompatActivity {
         //Getting the client from the bundle
         cliente=extras.getString("cliente");
         bundle.putString("cliente", cliente);
-        Log.e(TAG,"cliente" + cliente);
         telefono = extras.getString("telefono");
-        Log.e(TAG,"telefono"+ telefono);
         bundle.putString("telefono", telefono);
         projectsList = new ArrayList<Proyecto>();
         try{
