@@ -1,12 +1,18 @@
 package DB;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import Entity.Cliente;
 import Entity.EncuestaResultadosPreEntity;
 import Entity.FotoStrings;
-import Entity.GeoEstatica;
 import Entity.GeoRegister;
 import Entity.HiScreenEntity;
 import Entity.PreguntaAbierta;
@@ -16,12 +22,6 @@ import Entity.RealizandoEncuestaEntity;
 import Entity.RespuestaUniversoEntity;
 import Entity.TelefonoEntity;
 import Entity.TipoEncuestaEntity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 //import db.BdEncuestas;
 /**
  * Created by Admin on 28/09/2015.

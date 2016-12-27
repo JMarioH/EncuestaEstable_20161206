@@ -5,11 +5,9 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,12 +27,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import DB.Dao;
 import Entity.GeoEstatica;
 import Entity.GeoRegister;
 import Entity.PreguntaAbierta;
 import Entity.PreguntaUniversoEntity;
 import Entity.RealizandoEncuestaEntity;
-import DB.Dao;
 import Utility.GPSTracker;
 
 /**
