@@ -3,10 +3,12 @@ package com.encuestas.popresearch.popresearchencuestas;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -185,27 +187,31 @@ public class Principal2 extends AppCompatActivity {
             //Se inserta en telefono del usuario en el Bundle
             bundle.putString("telefonoUsuario", telefono);
         }
-
         //Logins action
         blogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnected(getBaseContext());
-
-                if (connecTionAvailable) {
-
-                    try {
-                        db.deleteTableTelefonoLogged();
-                    } catch (Exception e) {
-                        e.getCause();
-                    }
-
-                    Intent intent = new Intent(Principal2.this, LoginUser.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(intent);
+                if(telefono != "" && loginEntity.getUsuario()!="" ){
+                    showAlert();
                 }else{
-                    Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    connectivity = new Connectivity();
+                    connecTionAvailable = connectivity.isConnected(getBaseContext());
+                    if (connecTionAvailable) {
+                        try {
+                            db.deleteTableTelefonoLogged();
+                        } catch (Exception e) {
+                            e.getCause();
+                        }
+                            db.deleteTableTelefonoLogged();
+                        lblMensaje.setText("");
+                        Intent intent = new Intent(Principal2.this, LoginUser.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    }
                 }
+
+
             }
         });
         //Ver action
@@ -256,6 +262,7 @@ public class Principal2 extends AppCompatActivity {
         try {
             db.open();
             numeroFotos = db.getfotosCount();
+
             if (numeroFotos > 0) {
                 btnuploadPhoto.setVisibility(View.VISIBLE);
 
@@ -273,7 +280,7 @@ public class Principal2 extends AppCompatActivity {
             public void onClick(View v) {
 
                 connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnected(getBaseContext());
+                connecTionAvailable = connectivity.isConnectedWifi(getBaseContext());
 
                 if (connecTionAvailable) {
                     db.open();
@@ -297,6 +304,7 @@ public class Principal2 extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+
                     datosPost.add(new BasicNameValuePair("subeFotos", jsonFotos.toString()));
                     new AsyncUploadFotos(Principal2.this, datosPost, URLFOTO, x).execute();
                     if (j == fotos.size()) {
@@ -306,7 +314,7 @@ public class Principal2 extends AppCompatActivity {
                         btnuploadPhoto.setVisibility(View.GONE);
                     }
                 } else {
-                    Toast.makeText(Principal2.this, "No hay conexión disponible para subir las fotos ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Principal2.this,"Debe estar conectado a una red WIFI para sincronizar las fotos " ,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -972,12 +980,44 @@ public class Principal2 extends AppCompatActivity {
         }
     }//ends getRespuestasUniverso()
 
+    public void showAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(Principal2.this).create();
+        alertDialog.setTitle("Mensaje");
+        alertDialog.setMessage("Cambiar de usuario borrara los datos existentes");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Si",
+            new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    connectivity = new Connectivity();
+                    connecTionAvailable = connectivity.isConnected(getBaseContext());
+                    if (connecTionAvailable) {
+                        try {
+                            db.deletesTables();
+                        } catch (Exception e) {
+                            e.getCause();
+                        }
+                           db.deletesTables();
+                        lblMensaje.setText("");
+                        Intent intent = new Intent(Principal2.this, LoginUser.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    }
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
+            }
+        });
+        alertDialog.show();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

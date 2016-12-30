@@ -64,9 +64,9 @@ public class Dao {
         database.delete(BdEncuestas.TABLE_RESPUESTAS_UNIVERSO,null,null);
         database.delete(BdEncuestas.TABLE_RESPUESTAS_ENCUESTA,null,null);
         database.delete(BdEncuestas.TABLE_PREGUNTA_ABIERTA,null,null);
-        // database.delete(BdEncuestas.TABLE_ENCUESTAS_RESULTADOS_PRE,null,null);   ///// -----
+        database.delete(BdEncuestas.TABLE_ENCUESTAS_RESULTADOS_PRE,null,null);   ///// -----
         database.delete(BdEncuestas.TABLE_REALIZANDO_ENCUESTA,null,null);
-        //database.delete(BdEncuestas.TABLE_TELEFONO_LOGGED,null,null);
+        database.delete(BdEncuestas.TABLE_TELEFONO_LOGGED,null,null);
         //database.delete(BdEncuestas.TABLE_PREGUNTAS_ENCUESTA_SELECTED_INTO_TABLE,null,null);
         close();
 
@@ -854,7 +854,6 @@ public class Dao {
     //Deletes table telefono_logged
     public void deleteTableTelefonoLogged(){
         open();
-
         database.delete(BdEncuestas.TABLE_TELEFONO_LOGGED, null, null);
         close();
     }

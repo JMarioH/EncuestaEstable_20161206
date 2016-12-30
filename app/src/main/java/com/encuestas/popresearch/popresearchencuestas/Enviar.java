@@ -9,6 +9,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -67,7 +68,6 @@ public class Enviar extends Activity {
     private FotoEncuesta fotoEncuesta;
     private String idEstablecimiento;
     private String idEncuesta;
-    private String nombreFile;
     private String nomArchivo,base64;
     private ArrayList<String> arrayFotos , arrayNomFoto;
     private ArrayList<NameValuePair> datosPost;
@@ -83,7 +83,7 @@ public class Enviar extends Activity {
         geoEstatica = new GeoEstatica();
         geoRegister = new GeoRegister();
 
-        Boolean validaRed = connectivity.isConnectedFast(this);
+        Boolean validaRed = connectivity.isConnected(this);
         db = new Dao(this); // instanciamos la Base de Datos
         Bundle extras = getIntent().getExtras(); // recuperamos  los valores de la encuesta
         id_ArchivoSeleccionado = extras.getString("id_archivoSeleccionado");
@@ -102,16 +102,10 @@ public class Enviar extends Activity {
         fotoEncuesta = new FotoEncuesta().getInstace();
         // si hay fotos para enviar
         boolean connecTionAvailable = isNetworkAvailable();
-
         if (connecTionAvailable) {
-
             // si tenemos internet enviamos
-
-            if (validaRed == true) {
-
-                 /*
-                 * Enviamos las encuestas
-                 */
+            if (validaRed == true) { // Enviamos la encuesta
+                Log.e(TAG,"opc a");
                 jsonArray = new JSONArray();
                 try {
                     //Getting the current date time
@@ -133,67 +127,37 @@ public class Enviar extends Activity {
                         json.put("fechahora", dateFormat.format(date));
                         //Adding jsons into Array of jsons
                         jsonArray.put(json);
-
                     }
                 } catch (Exception e) {
                     e.getCause();
                 }
-
+                prepareFotos();
                 new async().execute();
-
             }else{ // si no hay red guardamos localmente
-
+                Log.e(TAG,"opc b");
                 geoEstatica.reset();
-
                 //encuestas
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-                db.deletesTablaRealizandoEncuesta();
-
+               /* db.deletesTablaRealizandoEncuesta();*/
                 Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
                 Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(200);
+
                 Intent i = new Intent(Enviar.this, Principal2.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.putExtras(bundle);
                 startActivity(i);
                 // fotos
-                int x = 0;
-                if (fotoEncuesta.getNombre() != null) {
-                    idEstablecimiento = fotoEncuesta.getIdEstablecimiento();
-                    idEncuesta = fotoEncuesta.getIdEncuesta();
-                    arrayFotos = fotoEncuesta.getArrayFotos(); // array de base64 de las fotos
-                    for (x = 0; x < arrayFotos.size(); x++) {
-                        nomArchivo = idEncuesta + "_" + idEstablecimiento + "_" + fotoEncuesta.getNombre().get(x) + "_" + x + ".jpg";
-                        jsonFotos = new JSONArray();
-                        datosPost = new ArrayList<>();
-                        base64 = fotoEncuesta.getArrayFotos().get(x);
-                        db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
-                    }
-                }
+                prepareFotos();
             }
         }else{
-
+            Log.e(TAG,"opc c");
             geoEstatica.reset();
             //encuestas
             db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-            db.deletesTablaRealizandoEncuesta();
-
-
+        /*    db.deletesTablaRealizandoEncuesta();*/
             // fotos
-            int x = 0;
-            if (fotoEncuesta.getNombre() != null) {
-                idEstablecimiento = fotoEncuesta.getIdEstablecimiento();
-                idEncuesta = fotoEncuesta.getIdEncuesta();
-                arrayFotos = fotoEncuesta.getArrayFotos(); // array de base64 de las fotos
-                for (x = 0; x < arrayFotos.size(); x++) {
-                    nomArchivo = idEncuesta + "_" + idEstablecimiento + "_" + fotoEncuesta.getNombre().get(x) + "_" + x + ".jpg";
-                    jsonFotos = new JSONArray();
-                    datosPost = new ArrayList<>();
-                    base64 = fotoEncuesta.getArrayFotos().get(x);
-                    db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
-                }
-            }
-
+            prepareFotos();
             Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             vibrator.vibrate(200);
@@ -203,6 +167,78 @@ public class Enviar extends Activity {
             startActivity(i);
         }
     }
+    //Ends on created
+    class async extends AsyncTask<String, String, String> {
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(Enviar.this);
+            pDialog.setMessage("Enviando.... " + totalRegistrosEncuesta + " registros");
+            pDialog.setCancelable(false);
+            pDialog.setIndeterminate(true);
+            pDialog.show();
+        }
+        protected String doInBackground(String... params) {
+            txtPendientes = "0";
+            try {
+                request = new SoapObject(NAMESPACE, METHOD_NAME);
+                request.addProperty("cadena_json", jsonArray.toString());
+                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+                envelope.dotNet = true;
+                envelope.setOutputSoapObject(request);
+                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
+                androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
+                response = (SoapPrimitive) envelope.getResponse();
+                if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
+                    txtPendientes = response.toString();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return txtPendientes;
+        }
+        protected void onPostExecute(String result) {
+            Log.e(TAG, "result" + result);
+            if (result.equals("1")) {
+                Log.e(TAG, "a" + result);
+                geoEstatica.reset();
+                Toast.makeText(getApplicationContext(), "Encuesta enviada al server exitosamente", Toast.LENGTH_LONG).show();
+                // terminando de enviar las encuestas envia las fotos
+                enviaFotos();
+                db.deleteGeosTable();
+                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
+                db.deletesTablaRealizandoEncuesta();
+                db.deletesRecordsTable_encuestasResultadosPre();
+                pDialog.dismiss();
+                pDialog.hide();
+                Intent i = new Intent(Enviar.this, Principal2.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                i.putExtras(bundle);
+                startActivity(i);
+            }else{
+                Log.e(TAG, "b " + result);
+                geoEstatica.reset();
+                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
+               // db.deletesTablaRealizandoEncuesta();
+                pDialog.dismiss();
+                pDialog.hide();
+                Toast.makeText(getApplicationContext(), "No se pudieron enviar los datos", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Encuesta guardada localmente ", Toast.LENGTH_LONG).show();
+                //TODO aqui viajaba a Salir.java
+                Intent i = new Intent(Enviar.this, Principal2.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                i.putExtras(bundle);
+                startActivity(i);
+            }
+        }
+    }
+
+    //Checks if there is connection // revisa si existe una conexion a internet
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+
     public void enviaFotos(){
         // iniciamos el envio de las fotos
         int x;
@@ -233,83 +269,24 @@ public class Enviar extends Activity {
                 }
             }
             if(x==arrayFotos.size()){
-
                 db.deleteFotosTable();
             }
         }
     }
-    //Ends on created
-    class async extends AsyncTask<String, String, String> {
-        protected void onPreExecute() {
-            pDialog = new ProgressDialog(Enviar.this);
-            pDialog.setMessage("Enviando.... " + totalRegistrosEncuesta + " registros");
-            pDialog.setCancelable(false);
-            pDialog.setIndeterminate(true);
-            pDialog.show();
-        }
 
-        protected String doInBackground(String... params) {
-            txtPendientes = "0";
-            try {
-                request = new SoapObject(NAMESPACE, METHOD_NAME);
-                request.addProperty("cadena_json", jsonArray.toString());
-                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-                envelope.dotNet = true;
-                envelope.setOutputSoapObject(request);
-                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
-                androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
-                response = (SoapPrimitive) envelope.getResponse(); //get the response from your webservice
-
-                if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
-                    txtPendientes = response.toString();
-                } else {                                // si los datos no subieron
-                    txtPendientes = "0";
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return txtPendientes;
-        }
-
-        protected void onPostExecute(String result) {
-            if (txtPendientes.equals("1")) {
-                geoEstatica.reset();
-                Toast.makeText(getApplicationContext(), "Encuesta enviada al server exitosamente", Toast.LENGTH_LONG).show();
-                // terminando de enviar las encuestas envia las fotos
-                enviaFotos();
-                db.deleteGeosTable();
-                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
-                db.deletesTablaRealizandoEncuesta();
-                db.deletesRecordsTable_encuestasResultadosPre();
-
-                pDialog.dismiss();
-                pDialog.hide();
-                //TODO Aqui enviamos el proceso a Principal 2 como unicio. en lUgar de la clase Salir
-                Intent i = new Intent(Enviar.this, Principal2.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                i.putExtras(bundle);
-                startActivity(i);
-            }else{
-                geoEstatica.reset();
-                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-                db.deletesTablaRealizandoEncuesta();
-                pDialog.dismiss();
-                pDialog.hide();
-                Toast.makeText(getApplicationContext(), "No se pudieron enviar los datos", Toast.LENGTH_LONG).show();
-                Toast.makeText(getApplicationContext(), "Encuesta guardada localmente ", Toast.LENGTH_LONG).show();
-                //TODO aqui viajaba a Salir.java
-                Intent i = new Intent(Enviar.this, Principal2.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                i.putExtras(bundle);
-                startActivity(i);
+    public void prepareFotos(){
+        int x = 0;
+        if (fotoEncuesta.getNombre() != null) {
+            idEstablecimiento = fotoEncuesta.getIdEstablecimiento();
+            idEncuesta = fotoEncuesta.getIdEncuesta();
+            arrayFotos = fotoEncuesta.getArrayFotos(); // array de base64 de las fotos
+            for (x = 0; x < arrayFotos.size(); x++) {
+                nomArchivo = idEncuesta + "_" + idEstablecimiento + "_" + fotoEncuesta.getNombre().get(x) + "_" + x + ".jpg";
+                jsonFotos = new JSONArray();
+                datosPost = new ArrayList<>();
+                base64 = fotoEncuesta.getArrayFotos().get(x);
+                db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
             }
         }
     }
-    //Checks if there is connection // revisa si existe una conexion a internet
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
 }

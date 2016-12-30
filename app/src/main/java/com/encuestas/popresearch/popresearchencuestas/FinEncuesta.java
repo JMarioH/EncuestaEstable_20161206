@@ -29,6 +29,7 @@ public class FinEncuesta extends AppCompatActivity {
     String siguienteencuesta = "0";
     boolean banderaRegresar = true;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +51,7 @@ public class FinEncuesta extends AppCompatActivity {
         btonAceptar = (Button) findViewById(R.id.ButtonFinalizar);
         btonAceptar.setOnClickListener(new View.OnClickListener(){
             public void onClick(View view){
+
 
                 siguienteencuesta = "0";
                 bundle.putString("siguienteencuesta", siguienteencuesta);
