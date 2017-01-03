@@ -3,7 +3,6 @@ package com.encuestas.popresearch.popresearchencuestas;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -49,15 +48,13 @@ class AsyncUploadFotos extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean s) {
         super.onPostExecute(s);
-
-        if(count == mContador) {
-            Toast.makeText(context, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show();
-        }
         pDialog.hide();
         pDialog.dismiss();
+        if(s) {
+           Toast.makeText(context, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show();
+        }
+
     }
-
-
     @Override
     protected Boolean doInBackground(Void... params) {
         Boolean respuesta = false;
@@ -69,7 +66,6 @@ class AsyncUploadFotos extends AsyncTask<Void, Void, Boolean> {
             JSONObject jsonObject = new JSONObject(jsonRes);
             JSONObject result = jsonObject.getJSONObject("result");
             String success = result.getString("success");
-
             respuesta = true;
             mContador++;
 

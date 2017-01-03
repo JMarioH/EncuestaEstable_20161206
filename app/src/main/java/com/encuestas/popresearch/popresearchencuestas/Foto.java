@@ -12,7 +12,6 @@ import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +56,6 @@ public class Foto extends AppCompatActivity {
     private int permissionCheck  ;
 
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +76,6 @@ public class Foto extends AppCompatActivity {
 
         id_ArchivoSeleccionado = extras.getString("id_archivoSeleccionado");
         bundle.putString("id_archivoSeleccionado", id_ArchivoSeleccionado);
-        Log.e(TAG,"archivoSeleccionado "+ id_ArchivoSeleccionado);
         id_encuestaSeleccionada = extras.getString("id_encuestaSeleccionada");
         bundle.putString("id_encuestaSeleccionada", id_encuestaSeleccionada);
 
@@ -120,11 +117,12 @@ public class Foto extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
         /* Tomar foto*/
-            if(permissionCheck == -1) {
-                Toast.makeText(getBaseContext(),"Debe proporcionar permisos para usar la camara ",Toast.LENGTH_LONG).show();
-            }
-            btonFoto = (Button) findViewById(R.id.btnFoto);
+        if(permissionCheck == -1) {
+            Toast.makeText(getBaseContext(),"Debe proporcionar permisos para usar la camara ",Toast.LENGTH_LONG).show();
+        }
+        btonFoto = (Button) findViewById(R.id.btnFoto);
 
             btonFoto.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -138,14 +136,10 @@ public class Foto extends AppCompatActivity {
             });
 
     } //Ends onCreate
-
     @Override
     protected void onResume() {
         super.onResume();
-
-       permissionCheck = ContextCompat.checkSelfPermission(Foto.this,
-                Manifest.permission.CAMERA);
-
+       permissionCheck = ContextCompat.checkSelfPermission(Foto.this,Manifest.permission.CAMERA);
     }
     //Open
     public void open() {
@@ -174,7 +168,7 @@ public class Foto extends AppCompatActivity {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
                     File file = new File(Environment.getExternalStorageDirectory(), "/ImagenesEncuesta/" + id_encuestaSeleccionada + "/" + id_tiendaSeleccionada); //   990456 / id_tiendaSeleccionada
                     String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
 

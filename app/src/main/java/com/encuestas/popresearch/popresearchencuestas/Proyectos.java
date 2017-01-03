@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,9 +48,7 @@ public class Proyectos extends AppCompatActivity {
         //Getting the client from the bundle
         cliente=extras.getString("cliente");
         bundle.putString("cliente", cliente);
-        Log.e(TAG,"cliente" + cliente);
         telefono = extras.getString("telefono");
-        Log.e(TAG,"telefono"+ telefono);
         bundle.putString("telefono", telefono);
         projectsList = new ArrayList<Proyecto>();
         try{

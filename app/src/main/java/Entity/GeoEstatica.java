@@ -42,7 +42,7 @@ public class GeoEstatica  {
         return mEstatus;
     }
 
-     public void setmEstatus(boolean mEstatus) {
+    public void setmEstatus(boolean mEstatus) {
         this.mEstatus = mEstatus;
     }
     public static synchronized GeoEstatica getInstance(){

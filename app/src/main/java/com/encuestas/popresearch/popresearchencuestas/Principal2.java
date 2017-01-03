@@ -3,15 +3,15 @@ package com.encuestas.popresearch.popresearchencuestas;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -113,8 +113,8 @@ public class Principal2 extends AppCompatActivity {
     ProgressDialog pDialog;
     String telefono = "";
     String txtPendientes = "";
+    String usuario = LoginUser.usuario;
     String txtsync = "";
-    String usuario = Login.usuario2;
     TextView lblMensaje;
     LoginEntity loginEntity;
     //Lista encuestaResultadosPre
@@ -142,22 +142,23 @@ public class Principal2 extends AppCompatActivity {
         setContentView(R.layout.activity_principal);
 
         db = new Dao(this);
+
         bundle = new Bundle();
         loginEntity = new LoginEntity();
-
         blogin = (Button) findViewById(R.id.Button01);
         bver = (Button) findViewById(R.id.Button03);
         bsalir = (Button) findViewById(R.id.Button04);
         btnuploadPhoto = (Button) findViewById(R.id.btnuploadPhoto);
         bEncuestasPendientes = (Button) findViewById(R.id.ButtonEncuestasPendientes);
         bEncuestasPendientes.setVisibility(View.INVISIBLE);
-        bsync = (Button) findViewById(R.id.ButtonSync);
 
         lblMensaje = (TextView) findViewById(R.id.LblMensaje);
+
         try {
             if (usuario != null) {
                 loginEntity.setUsuario(usuario);
                 telefono = loginEntity.getUsuario();
+                Log.e(TAG,"usuario"+telefono);
             }
         } catch (Exception e) {
             e.getCause();
@@ -172,6 +173,7 @@ public class Principal2 extends AppCompatActivity {
                     TelefonoEntity telefonoObj = new TelefonoEntity();
                     telefonoObj = telefonos.get(i);
                     telefono = telefonoObj.getTelefono();
+                    Log.e(TAG,"usuario"+telefono);
                 }
             }
         } catch (Exception e) {
@@ -181,30 +183,35 @@ public class Principal2 extends AppCompatActivity {
         if (telefono != null) {
             lblMensaje.setEllipsize(TextUtils.TruncateAt.END);
             lblMensaje.setSingleLine(true);
-            lblMensaje.setText("Teléfono :  " + telefono);
+            lblMensaje.setText("Teléfono : " + telefono);
             //Se inserta en telefono del usuario en el Bundle
             bundle.putString("telefonoUsuario", telefono);
         }
-
         //Logins action
         blogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnected(getBaseContext());
-
-                if (connecTionAvailable) {
-
-                    try {
-                        db.deleteTableTelefonoLogged();
-                    } catch (Exception e) {
-                        e.getCause();
-                    }
-
-                    Intent intent = new Intent(Principal2.this, Login.class);
-                    startActivity(intent);
+                if(telefono != "" && loginEntity.getUsuario()!="" ){
+                    showAlert();
                 }else{
-                    Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    connectivity = new Connectivity();
+                    connecTionAvailable = connectivity.isConnected(getBaseContext());
+                    if (connecTionAvailable) {
+                        try {
+                            db.deleteTableTelefonoLogged();
+                        } catch (Exception e) {
+                            e.getCause();
+                        }
+                            db.deleteTableTelefonoLogged();
+                        lblMensaje.setText("");
+                        Intent intent = new Intent(Principal2.this, LoginUser.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    }
                 }
+
+
             }
         });
         //Ver action
@@ -229,21 +236,20 @@ public class Principal2 extends AppCompatActivity {
         bEncuestasPendientes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new asyncEncuestasPendientes().execute();
+                connectivity = new Connectivity();
+                connecTionAvailable = connectivity.isConnectedWifi(getBaseContext());
+
+                if (connecTionAvailable) {
+                    new asyncEncuestasPendientes().execute();
+                }else{
+                    Toast.makeText(Principal2.this,"Debe estar conectado a una red WIFI para sincronizar " ,Toast.LENGTH_LONG).show();
+                }
             }
         });
-
-        //Enviar Encuestas sync
-        bsync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new asyncEncuestasServer().execute();
-            }
-        });
-
         //Revisando si existen encuestas pendientes (Se muestra el boton de en encuestasPendientes)
         try {
             listaEncuestaResultadosPre = db.getAllEncuestaResultadosPre();
+
         } catch (Exception e) {
             e.getCause();
         }
@@ -256,6 +262,7 @@ public class Principal2 extends AppCompatActivity {
         try {
             db.open();
             numeroFotos = db.getfotosCount();
+
             if (numeroFotos > 0) {
                 btnuploadPhoto.setVisibility(View.VISIBLE);
 
@@ -273,7 +280,7 @@ public class Principal2 extends AppCompatActivity {
             public void onClick(View v) {
 
                 connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnected(getBaseContext());
+                connecTionAvailable = connectivity.isConnectedWifi(getBaseContext());
 
                 if (connecTionAvailable) {
                     db.open();
@@ -297,6 +304,7 @@ public class Principal2 extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+
                     datosPost.add(new BasicNameValuePair("subeFotos", jsonFotos.toString()));
                     new AsyncUploadFotos(Principal2.this, datosPost, URLFOTO, x).execute();
                     if (j == fotos.size()) {
@@ -306,7 +314,7 @@ public class Principal2 extends AppCompatActivity {
                         btnuploadPhoto.setVisibility(View.GONE);
                     }
                 } else {
-                    Toast.makeText(Principal2.this, "No hay conexión disponible para subir las fotos ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Principal2.this,"Debe estar conectado a una red WIFI para sincronizar las fotos " ,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -315,7 +323,6 @@ public class Principal2 extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         geoEstatica = new GeoEstatica().getInstance();
         gpsTracker = new GPSTracker(this);
     }
@@ -424,38 +431,40 @@ public class Principal2 extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             //Se realizara la conexion a la BD para traer
+
             try {
                 listaEncuestaResultadosPre = db.getAllEncuestaResultadosPre();
                 totalRegistrosPendientes = String.valueOf(listaEncuestaResultadosPre.size());
+                listGeos = new ArrayList<>();
                 listGeos = db.getAllGeos();
                 jsonArray = new JSONArray();
+
                 //Getting the current date time
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 Date date = new Date();
-
+                txtPendientes = "0";
                 for (int i = 0; i < listaEncuestaResultadosPre.size(); i++) {
+
                     geoRegister = new GeoRegister();
                     encuestaResultadosPre = new EncuestaResultadosPreEntity();
                     encuestaResultadosPre = listaEncuestaResultadosPre.get(i);
-                    geoRegister = db.getGeoRegister(listGeos.get(i).getIdEncuesta(),listGeos.get(i).getIdEstablecimiento());
-
+                    geoRegister = db.getGeoRegister(Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()),Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
                     JSONObject json = new JSONObject();
                     json.put("id_encuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
                     json.put("establecimiento", Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
                     json.put("pregunta", Integer.parseInt(encuestaResultadosPre.getIdPreguntaResultadosPre()));
-                    json.put("respuesta", encuestaResultadosPre.getIdRespuestaResultadosPre());
+                    json.put("respuesta", encuestaResultadosPre.getIdRespuestaResultadosPre().toString());
                     json.put("archivos_sync_tiendas_id", Integer.parseInt(encuestaResultadosPre.getIdArchivoResultadosPre()));
                     json.put("abierta", Boolean.parseBoolean(encuestaResultadosPre.getAbiertaResultadosPre()));  //boolean
-                    json.put("latitud", String.valueOf(geoRegister.getLatitud()));  // geo de la base de datos
-                    json.put("longitud", String.valueOf(geoRegister.getLongitud())); // geo de la base de datos
-                    json.put("telefono", telefono);
-                    json.put("fechahora", dateFormat.format(date));
+                    json.put("latitud", geoRegister.getLatitud().toString());  // geo de la base de datos
+                    json.put("longitud", geoRegister.getLongitud().toString()); // geo de la base de datos
+                    json.put("telefono", telefono.toString());
+                    json.put("fechahora", dateFormat.format(date).toString());
                     //Adding jsons into Array of jsons
                     jsonArray.put(json);
-
                 }
-                txtPendientes = "0";
                 request = new SoapObject(NAMESPACE, METHOD_NAME);
+                Log.e(TAG,"reques"+ request);
                 request.addProperty("cadena_json", jsonArray.toString());
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;
@@ -467,7 +476,7 @@ public class Principal2 extends AppCompatActivity {
 
                 txtPendientes = "1" ;
             } catch (Exception e) {
-                txtPendientes = "0";
+               e.printStackTrace();
             }
             return txtPendientes;
         }
@@ -476,23 +485,20 @@ public class Principal2 extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             pDialog.dismiss();
-
-            if (txtPendientes.equals("1")) {
+            pDialog.hide();
+            if (result.equals("1")) {
                 Toast.makeText(Principal2.this, totalRegistrosPendientes + " Registros en encuestas Pendientes enviadas exitosamente !!", Toast.LENGTH_LONG).show();
                 db.updateflagenviada();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
+                db.deleteGeosTable();
             } else {
                 Toast.makeText(Principal2.this, "No hay conexion con el servidor, intentalo mas tarde.", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
             }
+
             Intent intent = new Intent(Principal2.this, Principal2.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
         }
     }
-
     ///////////////////////////////////////////////// GETTING CLIENTES /////////////////////////////////////////////////////////
     public String getClientes() {
         try {
@@ -645,7 +651,7 @@ public class Principal2 extends AppCompatActivity {
         int contadorPro = 0;
 
         while (numeroRegistrosPro > 0) {
-            JSONObject json_data = null;
+            JSONObject json_data;
             try {
                 //Getting the json data
                 json_data = jsonArrayProyectos.getJSONObject(contadorPro);
@@ -727,7 +733,7 @@ public class Principal2 extends AppCompatActivity {
         int numeroRegistrosTipoEncuesta = jsonArrayTipoEncuesta.length();
         int contadorTipoEncuesta = 0;
         while (numeroRegistrosTipoEncuesta > 0) {
-            JSONObject json_data = null;
+            JSONObject json_data ;
             try {
                 json_data = jsonArrayTipoEncuesta.getJSONObject(contadorTipoEncuesta);
                 TipoEncuestaEntity tipoEncuestaEntity = new TipoEncuestaEntity();
@@ -798,7 +804,7 @@ public class Principal2 extends AppCompatActivity {
         int numeroRegistrosEncuestas = jsonArrayCatMaster.length();
         int contadorEncuestas = 0;
         while (numeroRegistrosEncuestas > 0) {
-            JSONObject json_data = null;
+            JSONObject json_data;
             try {
                 //Getting the json data
                 json_data = jsonArrayCatMaster.getJSONObject(contadorEncuestas);
@@ -866,7 +872,7 @@ public class Principal2 extends AppCompatActivity {
 
         int contadorPreguntas = 0;
         while (numeroRegistrosPreguntas > 0) {
-            JSONObject json_data = null;
+            JSONObject json_data;
             try {
                 //Getting the json data
                 json_data = jsonArrayPreguntasUniverso.getJSONObject(contadorPreguntas);
@@ -974,69 +980,44 @@ public class Principal2 extends AppCompatActivity {
         }
     }//ends getRespuestasUniverso()
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-        }
-        super.onKeyDown(keyCode, event);
-        return false;
-    }
-
-    //Checks if there is connection
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    /////sync//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    class asyncEncuestasServer extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            //para el progress dialog
-            pDialog = new ProgressDialog(Principal2.this);
-            pDialog.setMessage("Sync con server");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        protected String doInBackground(String... params) {
-            boolean connecTionAvailable = isNetworkAvailable();
-            if (connecTionAvailable) {
-                txtsync = "1";
-            } else {
-                txtsync = "0";
+    public void showAlert() {
+        AlertDialog alertDialog = new AlertDialog.Builder(Principal2.this).create();
+        alertDialog.setTitle("Mensaje");
+        alertDialog.setMessage("Cambiar de usuario borrara los datos existentes");
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Si",
+            new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    connectivity = new Connectivity();
+                    connecTionAvailable = connectivity.isConnected(getBaseContext());
+                    if (connecTionAvailable) {
+                        try {
+                            db.deletesTables();
+                        } catch (Exception e) {
+                            e.getCause();
+                        }
+                           db.deletesTables();
+                        lblMensaje.setText("");
+                        Intent intent = new Intent(Principal2.this, LoginUser.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent);
+                    }else{
+                        Toast.makeText(Principal2.this,"Debe conectarse para loguearse" ,Toast.LENGTH_SHORT).show();
+                    }
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                dialog.dismiss();
             }
-            //txtsync = "1";
-            return txtsync;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            pDialog.dismiss();
-            if (txtsync.equals("1")) {
-                Toast.makeText(Principal2.this, "Se sincronizo correctamente con el Servidor", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
-            } else {
-                Toast.makeText(Principal2.this, "No hay conexion, intentalo mas tarde.", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
-            }
-            Intent intent = new Intent(Principal2.this, Principal2.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-        }
+        });
+        alertDialog.show();
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
