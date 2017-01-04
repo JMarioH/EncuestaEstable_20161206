@@ -168,12 +168,12 @@ public class Foto extends AppCompatActivity {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
                     File file = new File(Environment.getExternalStorageDirectory(), "/ImagenesEncuesta/" + id_encuestaSeleccionada + "/" + id_tiendaSeleccionada); //   990456 / id_tiendaSeleccionada
                     String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
-
                     banderaFotoTomada = true;
                     Bitmap newBitmap = redimensionarIMG(bitmap,200,300);
+
                     if (arrayFotos.size() == 0) {
                         imgView.setImageBitmap(newBitmap);
                     }else if(arrayFotos.size() == 1){

@@ -15,17 +15,15 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
-import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import AsynckData.Conexiones;
+import AsynckData.ServiceHandler;
 import DB.Dao;
 import Entity.FotoEncuesta;
 import Entity.FotoStrings;
@@ -45,6 +43,7 @@ public class Enviar extends Activity {
     private String METHOD_NAME = "setResultadosEncuesta";  //the webservice method that you want to call
     private final String URL = "http://" + Conexiones.IP_Server + "/wsDroidLogin3/wsDroidLogin3.asmx";
     private String URLFOTO = "http://popresearch8.cloudapp.net/b/fotosws.php";
+    private String URLEncuesta = "http://popresearch8.cloudapp.net/b/setEncuesta.php"; // todo URL test set encuestas
 
     private JSONArray jsonArray, jsonFotos;
     private SoapObject request;
@@ -70,7 +69,7 @@ public class Enviar extends Activity {
     private String idEncuesta;
     private String nomArchivo,base64;
     private ArrayList<String> arrayFotos , arrayNomFoto;
-    private ArrayList<NameValuePair> datosPost;
+    private ArrayList<NameValuePair> datosPost ,data;
     Connectivity connectivity;
     GeoEstatica geoEstatica;
     GeoRegister geoRegister;
@@ -111,11 +110,16 @@ public class Enviar extends Activity {
                     //Getting the current date time
                     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                     Date date = new Date();
+                    data = new ArrayList<>();
+
                     for (int i = 0; i < totalRegistrosEncuesta; i++) {
                         RealizandoEncuestaEntity realizandoEncuestaEntity = new RealizandoEncuestaEntity();
                         realizandoEncuestaEntity = listRealizandoEncuesta.get(i);
+                        geoRegister = new GeoRegister();
+
+                        geoRegister = db.getGeoRegister(Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()),Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
                         JSONObject json = new JSONObject();
-                        json.put("id_encuesta", Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()));
+                        /*json.put("id_encuesta", Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()));
                         json.put("establecimiento", Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
                         json.put("pregunta", Integer.parseInt(realizandoEncuestaEntity.getId_preguntaRealizandoEncuesta()));
                         json.put("respuesta", realizandoEncuestaEntity.getId_respuestaRealizandoEncuesta());
@@ -124,17 +128,30 @@ public class Enviar extends Activity {
                         json.put("latitud", realizandoEncuestaEntity.getLatitudRealizandoEncuesta());
                         json.put("longitud", realizandoEncuestaEntity.getLongitudRealizandoEncuesta());
                         json.put("telefono", mobile);
-                        json.put("fechahora", dateFormat.format(date));
-                        //Adding jsons into Array of jsons
+                        json.put("fechahora", dateFormat.format(date));*/
+                        // TODO NUEVO ENVIO TEST PHP 7
+                        json.put("idEncuesta", Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()));
+                        json.put("idEstablecimiento", Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
+                        json.put("idTienda",Integer.parseInt(realizandoEncuestaEntity.getIdArchivoRealizandoEncuesta()));
+                        json.put("usuario", mobile);
+                        json.put("idPregunta", Integer.parseInt(realizandoEncuestaEntity.getId_preguntaRealizandoEncuesta()));
+                        json.put("idRespuesta", realizandoEncuestaEntity.getId_respuestaRealizandoEncuesta());
+                        json.put("abierta", Boolean.parseBoolean(realizandoEncuestaEntity.getAbiertaRealizandoEncuesta()));  //boolean
+                        json.put("latitud", geoRegister.getLatitud().toString());
+                        json.put("longitud", geoRegister.getLongitud().toString());
+                        json.put("fecha", dateFormat.format(date));
+
                         jsonArray.put(json);
                     }
+                    data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
+
                 } catch (Exception e) {
                     e.getCause();
                 }
                 prepareFotos();
                 new async().execute();
             }else{ // si no hay red guardamos localmente
-                Log.e(TAG,"opc b");
+
                 geoEstatica.reset();
                 //encuestas
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
@@ -179,18 +196,27 @@ public class Enviar extends Activity {
         protected String doInBackground(String... params) {
             txtPendientes = "0";
             try {
-                request = new SoapObject(NAMESPACE, METHOD_NAME);
+              /*  request = new SoapObject(NAMESPACE, METHOD_NAME);
                 request.addProperty("cadena_json", jsonArray.toString());
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
                 envelope.dotNet = true;
                 envelope.setOutputSoapObject(request);
-                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
+                HttpTransportSE androidHttpTransport = new HttpTransportSE(URLEncuesta);
                 androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
-                response = (SoapPrimitive) envelope.getResponse();
+                response = (SoapPrimitive) envelope.getResponse();*/
+                //TODO cambio de webservices php 7
+
+                ServiceHandler serviceHandler = new ServiceHandler();
+                String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
+                JSONObject jsonObject = new JSONObject(response);
+                JSONObject result = jsonObject.getJSONObject("result");
+
+                txtPendientes = result.getString("success").toString();
                 if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
                     txtPendientes = response.toString();
                 }
-            } catch (Exception e) {
+
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return txtPendientes;

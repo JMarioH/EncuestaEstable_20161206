@@ -116,11 +116,13 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
             geoEstatica.setmEstatus(true);
             geoEstatica.setsLatitud(gpsTracker.getLatitude());
             geoEstatica.setsLongitud(gpsTracker.getLongitude());
+
             newLatitud = geoEstatica.getsLatitud();
             newlongitud = geoEstatica.getsLongitud();
-
             GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
+            db.open();
             db.insertGeos(geoRegister);
+            db.close();
         }
 
         mobile = extras.getString("mobile");

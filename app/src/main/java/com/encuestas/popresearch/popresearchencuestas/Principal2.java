@@ -34,11 +34,11 @@ import java.util.Date;
 import java.util.List;
 
 import AsynckData.Conexiones;
+import AsynckData.ServiceHandler;
 import DB.Dao;
 import Entity.Cliente;
 import Entity.EncuestaResultadosPreEntity;
 import Entity.FotoStrings;
-import Entity.GeoEstatica;
 import Entity.GeoRegister;
 import Entity.HiScreenEntity;
 import Entity.LoginEntity;
@@ -129,13 +129,13 @@ public class Principal2 extends AppCompatActivity {
     ArrayList<FotoStrings> fotos;
 
     GPSTracker gpsTracker;
-    private GeoEstatica geoEstatica;
     Connectivity connectivity;
     boolean connecTionAvailable;
     ArrayList<GeoRegister> listGeos;
     GeoRegister geoRegister;
     EncuestaResultadosPreEntity encuestaResultadosPre;
-
+    private ArrayList<NameValuePair> data;
+    private String URLEncuesta = "http://popresearch8.cloudapp.net/b/setEncuesta.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -318,12 +318,18 @@ public class Principal2 extends AppCompatActivity {
                 }
             }
         });
+
+        int countGeos  = 0;
+        db.open();
+        countGeos = db.getCountGeos();
+        Log.e(TAG,"countGeos : " + countGeos );
+        db.close();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        geoEstatica = new GeoEstatica().getInstance();
+
         gpsTracker = new GPSTracker(this);
     }
 
@@ -426,8 +432,6 @@ public class Principal2 extends AppCompatActivity {
             pDialog.setCancelable(false);
             pDialog.show();
         }
-
-
         @Override
         protected String doInBackground(String... params) {
             //Se realizara la conexion a la BD para traer
@@ -438,11 +442,11 @@ public class Principal2 extends AppCompatActivity {
                 listGeos = new ArrayList<>();
                 listGeos = db.getAllGeos();
                 jsonArray = new JSONArray();
-
                 //Getting the current date time
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 Date date = new Date();
                 txtPendientes = "0";
+                data = new ArrayList<>();
                 for (int i = 0; i < listaEncuestaResultadosPre.size(); i++) {
 
                     geoRegister = new GeoRegister();
@@ -450,7 +454,7 @@ public class Principal2 extends AppCompatActivity {
                     encuestaResultadosPre = listaEncuestaResultadosPre.get(i);
                     geoRegister = db.getGeoRegister(Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()),Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
                     JSONObject json = new JSONObject();
-                    json.put("id_encuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
+                 /*  json.put("id_encuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
                     json.put("establecimiento", Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
                     json.put("pregunta", Integer.parseInt(encuestaResultadosPre.getIdPreguntaResultadosPre()));
                     json.put("respuesta", encuestaResultadosPre.getIdRespuestaResultadosPre().toString());
@@ -459,11 +463,22 @@ public class Principal2 extends AppCompatActivity {
                     json.put("latitud", geoRegister.getLatitud().toString());  // geo de la base de datos
                     json.put("longitud", geoRegister.getLongitud().toString()); // geo de la base de datos
                     json.put("telefono", telefono.toString());
-                    json.put("fechahora", dateFormat.format(date).toString());
+                    json.put("fechahora", dateFormat.format(date).toString());*/
                     //Adding jsons into Array of jsons
+                    json.put("idEncuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
+                    json.put("idEstablecimiento", Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
+                    json.put("idTienda",Integer.parseInt(encuestaResultadosPre.getIdArchivoResultadosPre()));
+                    json.put("usuario", telefono.toString());
+                    json.put("idPregunta", Integer.parseInt(encuestaResultadosPre.getIdPreguntaResultadosPre()));
+                    json.put("idRespuesta", encuestaResultadosPre.getIdRespuestaResultadosPre().toString());
+                    json.put("abierta", Boolean.parseBoolean(encuestaResultadosPre.getAbiertaResultadosPre()));  //boolean
+                    json.put("latitud", geoRegister.getLatitud().toString());  // geo de la base de datos
+                    json.put("longitud", geoRegister.getLongitud().toString()); // geo de la base de datos
+                    json.put("fecha", dateFormat.format(date).toString());
                     jsonArray.put(json);
+
                 }
-                request = new SoapObject(NAMESPACE, METHOD_NAME);
+               /* request = new SoapObject(NAMESPACE, METHOD_NAME);
                 Log.e(TAG,"reques"+ request);
                 request.addProperty("cadena_json", jsonArray.toString());
                 SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
@@ -473,8 +488,17 @@ public class Principal2 extends AppCompatActivity {
                 androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
                 response = (SoapPrimitive) envelope.getResponse(); //get the response from your webservice
                 txtPendientes = response.toString();
+                txtPendientes = "1" ;*/
+                data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
+                ServiceHandler serviceHandler = new ServiceHandler();
+                String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
+                JSONObject jsonObject = new JSONObject(response);
+                JSONObject result = jsonObject.getJSONObject("result");
 
-                txtPendientes = "1" ;
+                txtPendientes = result.getString("success").toString();
+                if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
+                    txtPendientes = response.toString();
+                }
             } catch (Exception e) {
                e.printStackTrace();
             }
