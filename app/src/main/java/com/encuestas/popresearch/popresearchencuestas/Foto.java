@@ -168,11 +168,17 @@ public class Foto extends AppCompatActivity {
                     BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
                     bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
+
                     File file = new File(Environment.getExternalStorageDirectory(), "/ImagenesEncuesta/" + id_encuestaSeleccionada + "/" + id_tiendaSeleccionada); //   990456 / id_tiendaSeleccionada
                     String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
                     banderaFotoTomada = true;
                     Bitmap newBitmap = redimensionarIMG(bitmap,200,300);
+
+                    Bitmap bitMapEnvio = redimensionarIMG(bitmap,768,1024);
+                    ByteArrayOutputStream mbytes = new ByteArrayOutputStream();
+                    bitMapEnvio.compress(Bitmap.CompressFormat.JPEG,50,mbytes);
+
 
                     if (arrayFotos.size() == 0) {
                         imgView.setImageBitmap(newBitmap);
@@ -189,7 +195,7 @@ public class Foto extends AppCompatActivity {
                     File fileFinal = new File(file, fname);
                     if (fileFinal.exists()) fileFinal.delete();
 
-                    byteArray = bytes.toByteArray();
+                    byteArray = mbytes.toByteArray();
                     ba1 = Base64.encodeToString(byteArray, Base64.DEFAULT);
                     arrayFotos.add(ba1);
                     arrayNombrefoto.add(nombreFoto);

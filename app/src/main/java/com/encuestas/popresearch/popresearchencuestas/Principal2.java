@@ -100,7 +100,7 @@ public class Principal2 extends AppCompatActivity {
     JSONArray jsonArrayRespuestasUniverso;
 
     private String URLFOTO = "http://popresearch8.cloudapp.net/b/fotosws.php";
-
+    private String URLEncuesta = "http://popresearch8.cloudapp.net/b/setEncuesta.php";
     boolean banderaClientes = false;
     boolean banderaProyectos = false;
     boolean banderaTipoEncuesta = false;
@@ -135,7 +135,7 @@ public class Principal2 extends AppCompatActivity {
     GeoRegister geoRegister;
     EncuestaResultadosPreEntity encuestaResultadosPre;
     private ArrayList<NameValuePair> data;
-    private String URLEncuesta = "http://popresearch8.cloudapp.net/b/setEncuesta.php";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -286,6 +286,7 @@ public class Principal2 extends AppCompatActivity {
                     db.open();
                     fotos = db.getAllFotos();
                     db.close();
+
                     String nomArchivo;
                     int j = 0;
                     jsonFotos = new JSONArray();
@@ -454,16 +455,6 @@ public class Principal2 extends AppCompatActivity {
                     encuestaResultadosPre = listaEncuestaResultadosPre.get(i);
                     geoRegister = db.getGeoRegister(Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()),Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
                     JSONObject json = new JSONObject();
-                 /*  json.put("id_encuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
-                    json.put("establecimiento", Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
-                    json.put("pregunta", Integer.parseInt(encuestaResultadosPre.getIdPreguntaResultadosPre()));
-                    json.put("respuesta", encuestaResultadosPre.getIdRespuestaResultadosPre().toString());
-                    json.put("archivos_sync_tiendas_id", Integer.parseInt(encuestaResultadosPre.getIdArchivoResultadosPre()));
-                    json.put("abierta", Boolean.parseBoolean(encuestaResultadosPre.getAbiertaResultadosPre()));  //boolean
-                    json.put("latitud", geoRegister.getLatitud().toString());  // geo de la base de datos
-                    json.put("longitud", geoRegister.getLongitud().toString()); // geo de la base de datos
-                    json.put("telefono", telefono.toString());
-                    json.put("fechahora", dateFormat.format(date).toString());*/
                     //Adding jsons into Array of jsons
                     json.put("idEncuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
                     json.put("idEstablecimiento", Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
@@ -478,17 +469,6 @@ public class Principal2 extends AppCompatActivity {
                     jsonArray.put(json);
 
                 }
-               /* request = new SoapObject(NAMESPACE, METHOD_NAME);
-                Log.e(TAG,"reques"+ request);
-                request.addProperty("cadena_json", jsonArray.toString());
-                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-                envelope.dotNet = true;
-                envelope.setOutputSoapObject(request);
-                HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
-                androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
-                response = (SoapPrimitive) envelope.getResponse(); //get the response from your webservice
-                txtPendientes = response.toString();
-                txtPendientes = "1" ;*/
                 data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
                 ServiceHandler serviceHandler = new ServiceHandler();
                 String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
@@ -640,6 +620,7 @@ public class Principal2 extends AppCompatActivity {
             HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
             androidHttpTransport.call(NAMESPACE_GET_PROYECTOS + METHOD_NAME_GET_PROYECTOS, envelope);
             response = (SoapPrimitive) envelope.getResponse();
+            Log.e(TAG,"responseProyecto" + response.toString());
             jsonArrayProyectos = new JSONArray(response.toString());
 
             if (jsonArrayProyectos == null) {

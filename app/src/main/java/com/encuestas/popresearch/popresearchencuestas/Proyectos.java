@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -54,6 +55,7 @@ public class Proyectos extends AppCompatActivity {
         try{
             projectsList = db.getAllProyectos(cliente);
             arrayProjects = new ArrayList<String>();
+            Log.e(TAG,"arraproyectos" + projectsList.size());
             for(int i = 0; i<projectsList.size();i++){
                 proyecto= new Proyecto();
                 proyecto = projectsList.get(i);

@@ -96,10 +96,8 @@ public class LoginUser extends AppCompatActivity {
             try{
                 ServiceHandler jsonParser = new ServiceHandler();
                 String jsonRes = jsonParser.makeServiceCall(URL, ServiceHandler.POST, data);
-
                 JSONObject jsonObject = new JSONObject(jsonRes);
                 JSONObject result = jsonObject.getJSONObject("result");
-
                 success = result.getString("logstatus");
 
                 return success;

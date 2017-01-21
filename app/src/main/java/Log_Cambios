@@ -7,10 +7,14 @@ version 1.3
 version 1.3.1
 1 .- Cambio al enviar las encuestas :
      si hay red dsiponible pero no hay datos debe guardar local
-
+2 .- envio de fotos al webservices en php  = "http://popresearch8.cloudapp.net/b/fotosws.php"
 
 Version 1.3.2
 
 1.- compresion de foto 40%
-2.- envio de datos por webservices en php 7
+2.- envio de encuestas por webservices en php =  "http://popresearch8.cloudapp.net/b/setEncuesta.php"
+3.- envio de encuestas pendientes al nuevo web services =  "http://popresearch8.cloudapp.net/b/setEncuesta.php"
 
+Version  2
+
+1.-Se cambio el tamño de letras del spinner a 12sp y se configuro a multilinea el widget

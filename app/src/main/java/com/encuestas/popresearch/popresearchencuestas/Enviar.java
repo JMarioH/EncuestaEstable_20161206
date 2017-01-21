@@ -9,7 +9,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -104,7 +103,6 @@ public class Enviar extends Activity {
         if (connecTionAvailable) {
             // si tenemos internet enviamos
             if (validaRed == true) { // Enviamos la encuesta
-                Log.e(TAG,"opc a");
                 jsonArray = new JSONArray();
                 try {
                     //Getting the current date time
@@ -119,16 +117,7 @@ public class Enviar extends Activity {
 
                         geoRegister = db.getGeoRegister(Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()),Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
                         JSONObject json = new JSONObject();
-                        /*json.put("id_encuesta", Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()));
-                        json.put("establecimiento", Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
-                        json.put("pregunta", Integer.parseInt(realizandoEncuestaEntity.getId_preguntaRealizandoEncuesta()));
-                        json.put("respuesta", realizandoEncuestaEntity.getId_respuestaRealizandoEncuesta());
-                        json.put("archivos_sync_tiendas_id", Integer.parseInt(realizandoEncuestaEntity.getIdArchivoRealizandoEncuesta()));
-                        json.put("abierta", Boolean.parseBoolean(realizandoEncuestaEntity.getAbiertaRealizandoEncuesta()));  //boolean
-                        json.put("latitud", realizandoEncuestaEntity.getLatitudRealizandoEncuesta());
-                        json.put("longitud", realizandoEncuestaEntity.getLongitudRealizandoEncuesta());
-                        json.put("telefono", mobile);
-                        json.put("fechahora", dateFormat.format(date));*/
+
                         // TODO NUEVO ENVIO TEST PHP 7
                         json.put("idEncuesta", Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()));
                         json.put("idEstablecimiento", Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
@@ -168,7 +157,7 @@ public class Enviar extends Activity {
                 prepareFotos();
             }
         }else{
-            Log.e(TAG,"opc c");
+
             geoEstatica.reset();
             //encuestas
             db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
@@ -196,16 +185,7 @@ public class Enviar extends Activity {
         protected String doInBackground(String... params) {
             txtPendientes = "0";
             try {
-              /*  request = new SoapObject(NAMESPACE, METHOD_NAME);
-                request.addProperty("cadena_json", jsonArray.toString());
-                SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
-                envelope.dotNet = true;
-                envelope.setOutputSoapObject(request);
-                HttpTransportSE androidHttpTransport = new HttpTransportSE(URLEncuesta);
-                androidHttpTransport.call(NAMESPACE + METHOD_NAME, envelope);
-                response = (SoapPrimitive) envelope.getResponse();*/
                 //TODO cambio de webservices php 7
-
                 ServiceHandler serviceHandler = new ServiceHandler();
                 String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
                 JSONObject jsonObject = new JSONObject(response);
@@ -222,9 +202,9 @@ public class Enviar extends Activity {
             return txtPendientes;
         }
         protected void onPostExecute(String result) {
-            Log.e(TAG, "result" + result);
+
             if (result.equals("1")) {
-                Log.e(TAG, "a" + result);
+
                 geoEstatica.reset();
                 Toast.makeText(getApplicationContext(), "Encuesta enviada al server exitosamente", Toast.LENGTH_LONG).show();
                 // terminando de enviar las encuestas envia las fotos
@@ -240,7 +220,7 @@ public class Enviar extends Activity {
                 i.putExtras(bundle);
                 startActivity(i);
             }else{
-                Log.e(TAG, "b " + result);
+
                 geoEstatica.reset();
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
                // db.deletesTablaRealizandoEncuesta();
@@ -299,7 +279,6 @@ public class Enviar extends Activity {
             }
         }
     }
-
     public void prepareFotos(){
         int x = 0;
         if (fotoEncuesta.getNombre() != null) {
@@ -308,8 +287,6 @@ public class Enviar extends Activity {
             arrayFotos = fotoEncuesta.getArrayFotos(); // array de base64 de las fotos
             for (x = 0; x < arrayFotos.size(); x++) {
                 nomArchivo = idEncuesta + "_" + idEstablecimiento + "_" + fotoEncuesta.getNombre().get(x) + "_" + x + ".jpg";
-                jsonFotos = new JSONArray();
-                datosPost = new ArrayList<>();
                 base64 = fotoEncuesta.getArrayFotos().get(x);
                 db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
             }
