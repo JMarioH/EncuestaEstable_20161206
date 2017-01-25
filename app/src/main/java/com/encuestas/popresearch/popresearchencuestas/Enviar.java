@@ -114,7 +114,6 @@ public class Enviar extends Activity {
                         RealizandoEncuestaEntity realizandoEncuestaEntity = new RealizandoEncuestaEntity();
                         realizandoEncuestaEntity = listRealizandoEncuesta.get(i);
                         geoRegister = new GeoRegister();
-
                         geoRegister = db.getGeoRegister(Integer.parseInt(realizandoEncuestaEntity.getId_encuestaRealizandoEncuesta()),Integer.parseInt(realizandoEncuestaEntity.getId_tiendaRealizandoEncuesta()));
                         JSONObject json = new JSONObject();
 

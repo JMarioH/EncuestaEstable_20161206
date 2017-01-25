@@ -3,11 +3,8 @@ package com.encuestas.popresearch.popresearchencuestas;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 
 import DB.Dao;
@@ -61,13 +57,10 @@ public class Foto extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foto);
         db = new Dao(this);
-        arrayFotos = new ArrayList<>();
-        arrayNombrefoto = new ArrayList<>();
         fotoEncuesta = new FotoEncuesta().getInstace();
-      //  txtNumfotos = (TextView) findViewById(R.id.txt_numeroFotos);
-
+        arrayNombrefoto = new ArrayList<>();
+        arrayFotos = new ArrayList<>();
         Bundle extras = getIntent().getExtras();
-
         imgView = (ImageView) findViewById(R.id.imageView1);
         imgview2= (ImageView) findViewById(R.id.imageView2);
         imgView3 = (ImageView) findViewById(R.id.imageView3);
@@ -144,8 +137,6 @@ public class Foto extends AppCompatActivity {
     //Open
     public void open() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         startActivityForResult(intent, 1);
     }
 
@@ -156,29 +147,17 @@ public class Foto extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
-                File f = new File(Environment.getExternalStorageDirectory().toString());
-                for (File temp : f.listFiles()) {
-                    if (temp.getName().equals("temp.jpg")) {
-                        f = temp;
-                        break;
-                    }
-                }
                 try {
-                    Bitmap bitmap;
-                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
 
-                    File file = new File(Environment.getExternalStorageDirectory(), "/ImagenesEncuesta/" + id_encuestaSeleccionada + "/" + id_tiendaSeleccionada); //   990456 / id_tiendaSeleccionada
                     String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
                     banderaFotoTomada = true;
                     Bitmap newBitmap = redimensionarIMG(bitmap,200,300);
-
                     Bitmap bitMapEnvio = redimensionarIMG(bitmap,768,1024);
                     ByteArrayOutputStream mbytes = new ByteArrayOutputStream();
                     bitMapEnvio.compress(Bitmap.CompressFormat.JPEG,50,mbytes);
-
 
                     if (arrayFotos.size() == 0) {
                         imgView.setImageBitmap(newBitmap);
@@ -191,14 +170,11 @@ public class Foto extends AppCompatActivity {
                     }else if(arrayFotos.size() ==4){
                         imgView5.setImageBitmap(newBitmap);
                     }
-                    String fname = nombreFoto + ".jpg";
-                    File fileFinal = new File(file, fname);
-                    if (fileFinal.exists()) fileFinal.delete();
-
                     byteArray = mbytes.toByteArray();
                     ba1 = Base64.encodeToString(byteArray, Base64.DEFAULT);
                     arrayFotos.add(ba1);
                     arrayNombrefoto.add(nombreFoto);
+
                     if(arrayFotos.size() == 5){
 
                         fotoEncuesta.setIdEstablecimiento(id_tiendaSeleccionada);

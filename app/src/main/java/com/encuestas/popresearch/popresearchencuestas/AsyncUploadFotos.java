@@ -1,5 +1,4 @@
 package com.encuestas.popresearch.popresearchencuestas;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 
 import AsynckData.ServiceHandler;
 import cz.msebera.android.httpclient.NameValuePair;
-
 /**
  * Created by jesus.hernandez on 28/09/16.
  * Clase para sincronizar las fotos con el servidor
@@ -44,7 +42,6 @@ class AsyncUploadFotos extends AsyncTask<Void, Void, Boolean> {
         pDialog.setCancelable(false);
         pDialog.show();
     }
-
     @Override
     protected void onPostExecute(Boolean s) {
         super.onPostExecute(s);
@@ -53,7 +50,6 @@ class AsyncUploadFotos extends AsyncTask<Void, Void, Boolean> {
         if(s) {
            Toast.makeText(context, "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show();
         }
-
     }
     @Override
     protected Boolean doInBackground(Void... params) {

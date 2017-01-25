@@ -237,7 +237,7 @@ public class Principal2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnectedWifi(getBaseContext());
+                connecTionAvailable = connectivity.isConnected(getBaseContext());
 
                 if (connecTionAvailable) {
                     new asyncEncuestasPendientes().execute();
@@ -280,7 +280,7 @@ public class Principal2 extends AppCompatActivity {
             public void onClick(View v) {
 
                 connectivity = new Connectivity();
-                connecTionAvailable = connectivity.isConnectedWifi(getBaseContext());
+                connecTionAvailable = connectivity.isConnected(getBaseContext());
 
                 if (connecTionAvailable) {
                     db.open();
@@ -976,7 +976,6 @@ public class Principal2 extends AppCompatActivity {
                 Toast toast1 = Toast.makeText(getApplicationContext(), "Error: al descargar Respuestas Universo   !!!!", Toast.LENGTH_SHORT);
                 toast1.show();
             }
-
         }//ends while
         if (numeroRegistrosRespuestas == 0) {
             return "ok";

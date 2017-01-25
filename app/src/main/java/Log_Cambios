@@ -18,3 +18,4 @@ Version 1.3.2
 Version  2
 
 1.-Se cambio el tamño de letras del spinner a 12sp y se configuro a multilinea el widget
+2.-Se cambio la validacion al enviar datos, ya no importa que sea 3g,4g o wifi para enviar encuestas y fotos
