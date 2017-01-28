@@ -158,7 +158,7 @@ public class Principal2 extends AppCompatActivity {
             if (usuario != null) {
                 loginEntity.setUsuario(usuario);
                 telefono = loginEntity.getUsuario();
-                Log.e(TAG,"usuario"+telefono);
+
             }
         } catch (Exception e) {
             e.getCause();
@@ -173,7 +173,6 @@ public class Principal2 extends AppCompatActivity {
                     TelefonoEntity telefonoObj = new TelefonoEntity();
                     telefonoObj = telefonos.get(i);
                     telefono = telefonoObj.getTelefono();
-                    Log.e(TAG,"usuario"+telefono);
                 }
             }
         } catch (Exception e) {
@@ -242,7 +241,7 @@ public class Principal2 extends AppCompatActivity {
                 if (connecTionAvailable) {
                     new asyncEncuestasPendientes().execute();
                 }else{
-                    Toast.makeText(Principal2.this,"Debe estar conectado a una red WIFI para sincronizar " ,Toast.LENGTH_LONG).show();
+                    Toast.makeText(Principal2.this,"Debe estar conectado a una red  para sincronizar " ,Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -255,7 +254,8 @@ public class Principal2 extends AppCompatActivity {
         }
         if (listaEncuestaResultadosPre.size() > 0) {
             bEncuestasPendientes.setVisibility(View.VISIBLE);
-        } else {
+            Log.e(TAG,"numero registros" + listaEncuestaResultadosPre.size())
+;        } else {
             bEncuestasPendientes.setVisibility(View.INVISIBLE);
         }
 
@@ -320,11 +320,6 @@ public class Principal2 extends AppCompatActivity {
             }
         });
 
-        int countGeos  = 0;
-        db.open();
-        countGeos = db.getCountGeos();
-        Log.e(TAG,"countGeos : " + countGeos );
-        db.close();
     }
 
     @Override
@@ -436,7 +431,7 @@ public class Principal2 extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             //Se realizara la conexion a la BD para traer
-
+            txtPendientes = "0";
             try {
                 listaEncuestaResultadosPre = db.getAllEncuestaResultadosPre();
                 totalRegistrosPendientes = String.valueOf(listaEncuestaResultadosPre.size());
@@ -446,14 +441,22 @@ public class Principal2 extends AppCompatActivity {
                 //Getting the current date time
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 Date date = new Date();
-                txtPendientes = "0";
                 data = new ArrayList<>();
+                String mlat,mlong;
+
                 for (int i = 0; i < listaEncuestaResultadosPre.size(); i++) {
 
                     geoRegister = new GeoRegister();
                     encuestaResultadosPre = new EncuestaResultadosPreEntity();
                     encuestaResultadosPre = listaEncuestaResultadosPre.get(i);
                     geoRegister = db.getGeoRegister(Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()),Integer.parseInt(encuestaResultadosPre.getIdTiendaResultadosPre()));
+                    if(geoRegister==null){
+                        mlat = "0.0";
+                        mlong = "0.0";
+                    }else{
+                        mlat = geoRegister.getLatitud();
+                        mlong = geoRegister.getLongitud();
+                    }
                     JSONObject json = new JSONObject();
                     //Adding jsons into Array of jsons
                     json.put("idEncuesta", Integer.parseInt(encuestaResultadosPre.getIdEncuestaResultadosPre()));
@@ -463,22 +466,18 @@ public class Principal2 extends AppCompatActivity {
                     json.put("idPregunta", Integer.parseInt(encuestaResultadosPre.getIdPreguntaResultadosPre()));
                     json.put("idRespuesta", encuestaResultadosPre.getIdRespuestaResultadosPre().toString());
                     json.put("abierta", Boolean.parseBoolean(encuestaResultadosPre.getAbiertaResultadosPre()));  //boolean
-                    json.put("latitud", geoRegister.getLatitud().toString());  // geo de la base de datos
-                    json.put("longitud", geoRegister.getLongitud().toString()); // geo de la base de datos
+                    json.put("latitud",mlat);  // geo de la base de datos
+                    json.put("longitud",mlong); // geo de la base de datos
                     json.put("fecha", dateFormat.format(date).toString());
                     jsonArray.put(json);
-
                 }
                 data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
                 ServiceHandler serviceHandler = new ServiceHandler();
                 String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
                 JSONObject jsonObject = new JSONObject(response);
                 JSONObject result = jsonObject.getJSONObject("result");
-
                 txtPendientes = result.getString("success").toString();
-                if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
-                    txtPendientes = response.toString();
-                }
+
             } catch (Exception e) {
                e.printStackTrace();
             }

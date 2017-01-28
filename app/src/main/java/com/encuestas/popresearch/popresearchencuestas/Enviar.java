@@ -54,7 +54,7 @@ public class Enviar extends Activity {
     private String id_encuestaSeleccionada;
     private String id_tiendaSeleccionada;
     private String mobile;
-    private String txtPendientes = "";
+    private String txtPendientes;
     private int flagenvio;
     private String siguienteencuesta;
     //DB
@@ -189,12 +189,7 @@ public class Enviar extends Activity {
                 String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
                 JSONObject jsonObject = new JSONObject(response);
                 JSONObject result = jsonObject.getJSONObject("result");
-
                 txtPendientes = result.getString("success").toString();
-                if (response.toString().equals("1")) {  // si los datos de la encuesta fueron subidos correctamente
-                    txtPendientes = response.toString();
-                }
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -212,8 +207,10 @@ public class Enviar extends Activity {
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
                 db.deletesTablaRealizandoEncuesta();
                 db.deletesRecordsTable_encuestasResultadosPre();
+
                 pDialog.dismiss();
                 pDialog.hide();
+
                 Intent i = new Intent(Enviar.this, Principal2.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.putExtras(bundle);
