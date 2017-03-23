@@ -1,0 +1,63 @@
+App Encuesta Version 2
+
+Descripcion de Directorios
+
+DIR : AsynckData - Conexiones
+
+Class : Conexiones -  tiene las URL fijas par conectar a los webservices en php (solo para enviar y recibir datos del cuestionario)
+Class : ServiceHandler -  es la clase encargada de gestionar las conexiones a los webservices .
+
+DIR :  DB - Base de Datos
+
+Class : DBEncuestas  - contiene la declaracion de las tablas y atributos de la base de datos SQLite
+Class : Dao - declara las operaciones  para manejar la base de datos (select,update,delete ) para cada tabla.
+
+DIR :  Entity - Modelos Simples
+
+Aqui todas las Clases son objetos simples :
+    Cliente , EncuestaResultadosPreEntity, FotoEncuesta ,FotoStrings , GeoEstatica ,GeoRegister ,HiScreenEntity
+    LoginEntity, PreguntaAbierta ,PreguntaUniverso ,Proyecto , RealizaconEncuestaEntity , RespuestaUniversoEntity
+    TelefonoEntity , TipoEncuestaEntity
+
+Dentro de Entiy existen  Objetos Singleton :
+
+FotoEncuesta - se usa para almacenar y mover los datos de las fotos
+FotoStrings  - se usa para almacenar y mover los datos de las fotos combinada con FotoEncuesta
+GeoEstatica - se utiliza para generar una sola ubicacion por cada inicio de encuesta
+
+DIR : Utility
+
+Class : Connectivity - con esta clase obtenemos el estatus de las conexiones disponibles para la aplicacion
+        Wifi,3g, 4g , etc.
+
+Class :  GPSTracker - esta clases gestiona la obtencion de la geolocalizacion ya sea por gps, o red ,
+        tambien mantiene las alertas si el dispositivo no tiene encendido el GPS o no ha dado permisos
+
+DIR ; com.encuestas.popresearch.popresearchencuestas
+
+Este es directorio principal de la aplicacion
+
+Class : AsynUploadFotos - sube las fotos al servidor
+Class : Encuestas2 - Inicia el cominezo del cuestionario tiene todos los elementos para los
+        diferentes tipos de preguntas
+
+Class : Enviar  -  Envia los datos de las encuestas y fotos al servidor, dependiendo el caso tambien
+        almacena los datos q no son enviados , es la clase fina del proceso
+
+Class : FinEncuesa - Solo es un puente entre la clase Encuestas2 y la clase Enviar
+
+Class : Foto - Es la clase encargada de gestionar las fotos en la apliacion
+Class : HiScreen - muestra la lista de asignaciones para este usuario
+Class : LoginUser - maneja el login de la aplicacion  asi como registro del usuario en la apliacion
+Class : Princiapal2 - maneja el inicio del proceso , tanto el inicio de las encuestas como
+        el envio de encuestas pendientes y fotos pendientes
+Class : Proyecto - muestra la seleccion de proyectos para iniciar la encuesta
+Class : TipoEncuesta -  muestra la lista de encuestas disponibles para el proyecto
+
+
+
+
+
+
+
+

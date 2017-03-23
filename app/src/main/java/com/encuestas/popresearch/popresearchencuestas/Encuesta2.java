@@ -37,6 +37,8 @@ import Utility.GPSTracker;
 
 /**
  * Created by Admin on 29/09/2015.
+ * Carga todos los elementos para poder contruir los cuestionarios
+ * aqui se realiza y registra la encuesta pregunta por pregunta
  */
 public class Encuesta2 extends AppCompatActivity implements View.OnClickListener {
 
@@ -81,8 +83,6 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
     TextView txtProduct;
 
     StringBuilder stringBuilder = new StringBuilder();
-
-
     String latitude = "0";
     String longitude = "0";
 
@@ -113,16 +113,12 @@ public class Encuesta2 extends AppCompatActivity implements View.OnClickListener
 
 
         if (geoEstatica.ismEstatus()==false) {
-
             geoEstatica.setmEstatus(true);
             geoEstatica.setsLatitud(gpsTracker.getLatitude());
             geoEstatica.setsLongitud(gpsTracker.getLongitude());
-
             newLatitud = geoEstatica.getsLatitud();
             newlongitud = geoEstatica.getsLongitud();
-
             GeoRegister geoRegister = new GeoRegister(Integer.valueOf(id_encuestaSeleccionada) ,Integer.valueOf(id_tiendaSeleccionada),String.valueOf(newLatitud),String.valueOf(newlongitud));
-
             db.open();
             db.insertGeos(geoRegister);
             db.close();

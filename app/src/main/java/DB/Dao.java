@@ -751,6 +751,7 @@ public class Dao {
         ArrayList<RealizandoEncuestaEntity> RealizandoEncuestaEntityList  = getRealizandoEncuestaEntity();
         open();
         for(int i = 0; i<RealizandoEncuestaEntityList.size();i++){
+
             //parametros a inserta en la tabla final (TABLE_ENCUESTAS_RESULTADOS_PRE)
             ContentValues values = new ContentValues();
             RealizandoEncuestaEntity realizandoEncuestasEntity = new RealizandoEncuestaEntity();
@@ -767,6 +768,7 @@ public class Dao {
             values.put(BdEncuestas.FlagEnviada, 0);
             values.put(BdEncuestas.FlagFotoEnviada, 0);
             database.insert(BdEncuestas.TABLE_ENCUESTAS_RESULTADOS_PRE, null, values);
+
         }
         close();
     }
@@ -776,6 +778,7 @@ public class Dao {
         ArrayList<RealizandoEncuestaEntity> RealizandoEncuestaEntityList  = getRealizandoEncuestaEntity();
         open();
         for(int i = 0; i<RealizandoEncuestaEntityList.size();i++){
+
             //parametros a inserta en la tabla final (TABLE_ENCUESTAS_RESULTADOS_PRE)
             ContentValues values = new ContentValues();
             RealizandoEncuestaEntity realizandoEncuestasEntity = new RealizandoEncuestaEntity();
@@ -792,6 +795,7 @@ public class Dao {
             values.put(BdEncuestas.FlagEnviada, 1);
             values.put(BdEncuestas.FlagFotoEnviada, 0);
             database.insert(BdEncuestas.TABLE_ENCUESTAS_RESULTADOS_PRE, null, values);
+
         }
         close();
     }

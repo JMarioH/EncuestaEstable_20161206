@@ -22,6 +22,7 @@ import Entity.TipoEncuestaEntity;
 
 /**
  * Created by Admin on 29/09/2015.
+ * Muestra la lista de asiganaciones disponibles para el proyecto selecionado
  */
 public class TipoEncuesta extends AppCompatActivity {
 

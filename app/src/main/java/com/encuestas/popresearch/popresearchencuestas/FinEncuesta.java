@@ -13,6 +13,7 @@ import DB.Dao;
 
 /**
  * Created by Admin on 29/09/2015.
+ * solo sirve para conectar entre el fin del cuestionario y el envio de datos al servidor
  */
 public class FinEncuesta extends AppCompatActivity {
 

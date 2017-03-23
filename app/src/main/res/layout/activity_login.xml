@@ -7,7 +7,7 @@
     android:padding="20dip"
     android:id="@+id/layout1"
     android:background="#FFFFFF"
-    tools:context=".Login"
+    tools:context=".LoginUser"
     android:weightSum="1">
 
     <TextView android:layout_width="fill_parent"

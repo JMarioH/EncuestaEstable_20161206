@@ -3,8 +3,11 @@ package com.encuestas.popresearch.popresearchencuestas;
 import android.Manifest;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.ArrayList;
 
 import DB.Dao;
@@ -25,6 +29,7 @@ import Entity.FotoEncuesta;
 
 /**
  * Created by Admin on 29/09/2015.
+ *   la clase toma fotos y va mostrando en la aplicacion las fotos tomadas
  */
 public class Foto extends AppCompatActivity {
 
@@ -137,6 +142,8 @@ public class Foto extends AppCompatActivity {
     //Open
     public void open() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File f = new File(android.os.Environment.getExternalStorageDirectory(), "temp.jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
         startActivityForResult(intent, 1);
     }
 
@@ -147,17 +154,28 @@ public class Foto extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
+                File f = new File(Environment.getExternalStorageDirectory().toString());
+                for (File temp : f.listFiles()) {
+                    if (temp.getName().equals("temp.jpg")) {
+                        f = temp;
+                        break;
+                    }
+                }
                 try {
-                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    Bitmap bitmap;
+                    BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+                    bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bytes);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
 
-                    String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
                     banderaFotoTomada = true;
                     Bitmap newBitmap = redimensionarIMG(bitmap,200,300);
-                    Bitmap bitMapEnvio = redimensionarIMG(bitmap,768,1024);
+
                     ByteArrayOutputStream mbytes = new ByteArrayOutputStream();
-                    bitMapEnvio.compress(Bitmap.CompressFormat.JPEG,50,mbytes);
+                    Bitmap bitMapEnvio = redimensionarIMG(bitmap,768,1024);
+                    bitMapEnvio.compress(Bitmap.CompressFormat.JPEG,60,mbytes);
+
+                    String nombreFoto =  String.valueOf(System.currentTimeMillis()); // nombre del archivo
 
                     if (arrayFotos.size() == 0) {
                         imgView.setImageBitmap(newBitmap);

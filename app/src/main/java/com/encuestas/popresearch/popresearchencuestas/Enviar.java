@@ -8,20 +8,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Vibrator;
+import android.os.Environment;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import AsynckData.Conexiones;
 import AsynckData.ServiceHandler;
 import DB.Dao;
 import Entity.FotoEncuesta;
@@ -35,18 +36,14 @@ import cz.msebera.android.httpclient.message.BasicNameValuePair;
 
 /**
  * Created by Admin on 29/09/2015.
+ * Envia los datos al servir tmb graba los datos como respaldo dentro de un archiv JSON
  */
 public class Enviar extends Activity {
     private String TAG = getClass().getSimpleName();
-    private String NAMESPACE = "http://tempuri.org/"; //the namespace that you'll find in the header of your asmx webservice
-    private String METHOD_NAME = "setResultadosEncuesta";  //the webservice method that you want to call
-    private final String URL = "http://" + Conexiones.IP_Server + "/wsDroidLogin3/wsDroidLogin3.asmx";
     private String URLFOTO = "http://popresearch8.cloudapp.net/b/fotosws.php";
     private String URLEncuesta = "http://popresearch8.cloudapp.net/b/setEncuesta.php"; // todo URL test set encuestas
 
     private JSONArray jsonArray, jsonFotos;
-    private SoapObject request;
-    private SoapPrimitive response;
     private ProgressDialog pDialog;
     // httpHandler handler;////////////////////////////////////////////
     private int totalRegistrosEncuesta;
@@ -55,7 +52,7 @@ public class Enviar extends Activity {
     private String id_tiendaSeleccionada;
     private String mobile;
     private String txtPendientes;
-    private int flagenvio;
+
     private String siguienteencuesta;
     //DB
     Dao db;
@@ -81,8 +78,8 @@ public class Enviar extends Activity {
         geoEstatica = new GeoEstatica();
         geoRegister = new GeoRegister();
 
-        Boolean validaRed = connectivity.isConnected(this);
-        db = new Dao(this); // instanciamos la Base de Datos
+
+        db = new Dao(getBaseContext()); // instanciamos la Base de Datos
         Bundle extras = getIntent().getExtras(); // recuperamos  los valores de la encuesta
         id_ArchivoSeleccionado = extras.getString("id_archivoSeleccionado");
         bundle.putString("id_archivoSeleccionado", id_ArchivoSeleccionado);
@@ -99,10 +96,6 @@ public class Enviar extends Activity {
         arrayFotos = new ArrayList<>();
         fotoEncuesta = new FotoEncuesta().getInstace();
         // si hay fotos para enviar
-        boolean connecTionAvailable = isNetworkAvailable();
-        if (connecTionAvailable) {
-            // si tenemos internet enviamos
-            if (validaRed == true) { // Enviamos la encuesta
                 jsonArray = new JSONArray();
                 try {
                     //Getting the current date time
@@ -131,46 +124,16 @@ public class Enviar extends Activity {
 
                         jsonArray.put(json);
                     }
+
                     data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
+                    grabar(data.toString());
 
                 } catch (Exception e) {
                     e.getCause();
                 }
                 prepareFotos();
                 new async().execute();
-            }else{ // si no hay red guardamos localmente
 
-                geoEstatica.reset();
-                //encuestas
-                db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-               /* db.deletesTablaRealizandoEncuesta();*/
-                Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(200);
-
-                Intent i = new Intent(Enviar.this, Principal2.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                i.putExtras(bundle);
-                startActivity(i);
-                // fotos
-                prepareFotos();
-            }
-        }else{
-
-            geoEstatica.reset();
-            //encuestas
-            db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
-        /*    db.deletesTablaRealizandoEncuesta();*/
-            // fotos
-            prepareFotos();
-            Toast.makeText(getApplicationContext(), "Encuesta guardada localmente", Toast.LENGTH_LONG).show();
-            Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            vibrator.vibrate(200);
-            Intent i = new Intent(Enviar.this, Principal2.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            i.putExtras(bundle);
-            startActivity(i);
-        }
     }
     //Ends on created
     class async extends AsyncTask<String, String, String> {
@@ -183,15 +146,20 @@ public class Enviar extends Activity {
         }
         protected String doInBackground(String... params) {
             txtPendientes = "0";
-            try {
-                //TODO cambio de webservices php 7
-                ServiceHandler serviceHandler = new ServiceHandler();
-                String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
-                JSONObject jsonObject = new JSONObject(response);
-                JSONObject result = jsonObject.getJSONObject("result");
-                txtPendientes = result.getString("success").toString();
-            } catch (JSONException e) {
-                e.printStackTrace();
+            Boolean validaRed = connectivity.isConnected(getBaseContext());
+            if (validaRed == true) { // Enviamos la encuesta
+                try {
+                    //TODO cambio de webservices php 7
+                    ServiceHandler serviceHandler = new ServiceHandler();
+                    String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
+                    JSONObject jsonObject = new JSONObject(response);
+                    JSONObject result = jsonObject.getJSONObject("result");
+                    txtPendientes = result.getString("success").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                txtPendientes = "0";
             }
             return txtPendientes;
         }
@@ -207,7 +175,6 @@ public class Enviar extends Activity {
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPreEnvio();
                 db.deletesTablaRealizandoEncuesta();
                 db.deletesRecordsTable_encuestasResultadosPre();
-
                 pDialog.dismiss();
                 pDialog.hide();
 
@@ -215,9 +182,11 @@ public class Enviar extends Activity {
                 i.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 i.putExtras(bundle);
                 startActivity(i);
+
             }else{
 
                 geoEstatica.reset();
+
                 db.passTableRealinzandoEncuestaToTableEncuestasResultadosPre();
                // db.deletesTablaRealizandoEncuesta();
                 pDialog.dismiss();
@@ -287,5 +256,28 @@ public class Enviar extends Activity {
                 db.addFotoEncuesta(new FotoStrings(idEstablecimiento, idEncuesta, (fotoEncuesta.getNombre().get(x)).toString(), base64));
             }
         }
+    }
+
+    public void grabar(String contenido) {
+        File ubicacion = Environment.getExternalStorageDirectory();
+        File logFile = new File(ubicacion.getAbsolutePath(), mobile + ".json");
+
+        if (!logFile.exists()) {
+            try {
+                logFile.createNewFile();
+                //Log.e(TAG, "crear txt");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            //  Log.e(TAG, "llena txt");
+            BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+            buf.append(contenido.toString());
+            buf.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

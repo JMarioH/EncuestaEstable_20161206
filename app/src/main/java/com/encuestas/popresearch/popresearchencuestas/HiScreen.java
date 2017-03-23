@@ -25,6 +25,8 @@ import Entity.HiScreenEntity;
 
 /**
  * Created by Admin on 29/09/2015.
+ *
+ * LIMPIA LAS TABLAS de resultados temporales antes de iniciar el proceso
  */
 public class HiScreen extends AppCompatActivity {
     String TAG = getClass().getName();
@@ -117,16 +119,8 @@ public class HiScreen extends AppCompatActivity {
         protected String doInBackground(String... params) {
             //limpimos la base de antes de cargar nuevos datos
             db.deletesTablaRealizandoEncuesta();
-            //checking if PreguntasEncuestasSeleccionada and RespuestasEncuestaSeleccionada
-   /*         int countRowsPreguntasEncuestaMobileIdTiendaSelected = db.getCountTABLE_PREGUNTAS_ENCUESTA();
-            Log.e(TAG,"count Preguntas : " + countRowsPreguntasEncuestaMobileIdTiendaSelected);
-            //Checking if RespuestasEncuestasSeleccionada
-            int countRowsRespuestasEncuestaMobileIdTiendaSelected = db.getCountTABLE_RESPUESTAS_ENCUESTA();
-            Log.e(TAG,"count REspuesta : " + countRowsRespuestasEncuestaMobileIdTiendaSelected);*/
-
             db.deletesRecordsTable_TABLE_PREGUNTAS_ENCUESTA();
             db.getPreguntasEncuestaSelectedIntoTable(id_encuestaSeleccionada);
-
             db.deletesRecordsTable_TABLE_RESPUESTAS_ENCUESTA();
             db.getRespuestasEncuestaSelectedIntoTable(id_encuestaSeleccionada);
 

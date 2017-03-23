@@ -23,6 +23,7 @@ import Entity.Proyecto;
 
 /**
  * Created by Admin on 29/09/2015.
+ * muestra la lista de proyectos existentes en la encuesta activa
  */
 public class Proyectos extends AppCompatActivity {
     public String TAG =getClass().getName();

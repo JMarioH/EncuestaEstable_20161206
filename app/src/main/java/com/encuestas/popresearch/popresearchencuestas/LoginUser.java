@@ -24,6 +24,7 @@ import cz.msebera.android.httpclient.message.BasicNameValuePair;
 
 /**
  * Created by jesus.hernandez on 07/12/16.
+ * Clase para logear el usuario
  */
 
 public class LoginUser extends AppCompatActivity {

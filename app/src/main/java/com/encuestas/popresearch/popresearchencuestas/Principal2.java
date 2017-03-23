@@ -48,7 +48,6 @@ import Entity.RespuestaUniversoEntity;
 import Entity.TelefonoEntity;
 import Entity.TipoEncuestaEntity;
 import Utility.Connectivity;
-import Utility.GPSTracker;
 import cz.msebera.android.httpclient.NameValuePair;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
 
@@ -56,14 +55,13 @@ import static android.R.attr.x;
 
 /**
  * Created by Admin on 29/09/2015.
+ * Es la clase que inicia la descarga de todos los datos , cliente, proyecto , tipoEncuesta , preguntas, respuestas
  */
 public class Principal2 extends AppCompatActivity {
 
 
     private String TAG = getClass().getSimpleName();
-    final String NAMESPACE = "http://tempuri.org/";
-    String METHOD_NAME = "setResultadosEncuestaPendientes";
-    final String URL = "http://" + Conexiones.getIP_Server() + "/wsDroidLogin3/wsDroidLogin3.asmx"; // ruta web services
+    final String URL = "http://" + Conexiones.getIP_Server() + "/wsDroidLogin3/wsDroidLogin3.asmx"; // ruta web para cargar toda la informacion de las encuestas
 
     JSONArray jsonArray;
     SoapObject request;
@@ -108,7 +106,7 @@ public class Principal2 extends AppCompatActivity {
     boolean banderaPreguntasUniverso = false;
     boolean banderaRespuestasUniverso = false;
 
-    Button blogin, bsync, bver, bsalir, bEncuestasPendientes, btnuploadPhoto;
+    Button blogin, bver, bsalir, bEncuestasPendientes, btnuploadPhoto;
     Bundle bundle;
     ProgressDialog pDialog;
     String telefono = "";
@@ -128,7 +126,6 @@ public class Principal2 extends AppCompatActivity {
     private JSONArray jsonFotos;
     ArrayList<FotoStrings> fotos;
 
-    GPSTracker gpsTracker;
     Connectivity connectivity;
     boolean connecTionAvailable;
     ArrayList<GeoRegister> listGeos;
@@ -140,9 +137,7 @@ public class Principal2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
-
         db = new Dao(this);
-
         bundle = new Bundle();
         loginEntity = new LoginEntity();
         blogin = (Button) findViewById(R.id.Button01);
@@ -153,7 +148,6 @@ public class Principal2 extends AppCompatActivity {
         bEncuestasPendientes.setVisibility(View.INVISIBLE);
 
         lblMensaje = (TextView) findViewById(R.id.LblMensaje);
-
         try {
             if (usuario != null) {
                 loginEntity.setUsuario(usuario);
@@ -163,8 +157,8 @@ public class Principal2 extends AppCompatActivity {
         } catch (Exception e) {
             e.getCause();
         }
-        ArrayList<TelefonoEntity> telefonos = new ArrayList<TelefonoEntity>();
 
+        ArrayList<TelefonoEntity> telefonos = new ArrayList<TelefonoEntity>();
         try {
             telefonos = db.getTelefonoLogged();
 
@@ -213,8 +207,7 @@ public class Principal2 extends AppCompatActivity {
 
             }
         });
-        //Ver action
-
+        //boton login
         bver.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 new asynclogin().execute();
@@ -254,7 +247,7 @@ public class Principal2 extends AppCompatActivity {
         }
         if (listaEncuestaResultadosPre.size() > 0) {
             bEncuestasPendientes.setVisibility(View.VISIBLE);
-            Log.e(TAG,"numero registros" + listaEncuestaResultadosPre.size())
+
 ;        } else {
             bEncuestasPendientes.setVisibility(View.INVISIBLE);
         }
@@ -275,6 +268,7 @@ public class Principal2 extends AppCompatActivity {
             // error
             e.printStackTrace();
         }
+        // boton fotos pendientes
         btnuploadPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -288,6 +282,7 @@ public class Principal2 extends AppCompatActivity {
                     db.close();
 
                     String nomArchivo;
+
                     int j = 0;
                     jsonFotos = new JSONArray();
                     for (int x = 0; x < fotos.size(); x++) {
@@ -308,6 +303,7 @@ public class Principal2 extends AppCompatActivity {
 
                     datosPost.add(new BasicNameValuePair("subeFotos", jsonFotos.toString()));
                     new AsyncUploadFotos(Principal2.this, datosPost, URLFOTO, x).execute();
+
                     if (j == fotos.size()) {
                         db.open();
                         db.deleteFotosTable();
@@ -322,14 +318,9 @@ public class Principal2 extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
 
-        gpsTracker = new GPSTracker(this);
-    }
 
-    //Asyncronous downloading information
+    //descarga la informacion total para la aplicacion
     class asynclogin extends AsyncTask<String, String, String> {
 
         @Override
@@ -471,7 +462,9 @@ public class Principal2 extends AppCompatActivity {
                     json.put("fecha", dateFormat.format(date).toString());
                     jsonArray.put(json);
                 }
+
                 data.add(new BasicNameValuePair("setEncuestas",jsonArray.toString()));
+                Log.e(TAG,"array : " + data.toString());
                 ServiceHandler serviceHandler = new ServiceHandler();
                 String response = serviceHandler.makeServiceCall(URLEncuesta, ServiceHandler.POST, data);
                 JSONObject jsonObject = new JSONObject(response);
@@ -494,7 +487,7 @@ public class Principal2 extends AppCompatActivity {
                 db.updateflagenviada();
                 db.deleteGeosTable();
             } else {
-                Toast.makeText(Principal2.this, "No hay conexion con el servidor, intentalo mas tarde.", Toast.LENGTH_LONG).show();
+                Toast.makeText(Principal2.this, "Encuesta Guardada localmente.", Toast.LENGTH_LONG).show();
             }
 
             Intent intent = new Intent(Principal2.this, Principal2.class);
@@ -518,7 +511,6 @@ public class Principal2 extends AppCompatActivity {
             envelope.setOutputSoapObject(request);
             HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
             androidHttpTransport.call(NAMESPACE_GET_CLIENTES + METHOD_NAME_GET_CLIENTES, envelope);
-
             response = (SoapPrimitive) envelope.getResponse();
             jsonArrayClientes = new JSONArray(response.toString());
             //Validating the jsonArrayClients
@@ -619,7 +611,7 @@ public class Principal2 extends AppCompatActivity {
             HttpTransportSE androidHttpTransport = new HttpTransportSE(URL);
             androidHttpTransport.call(NAMESPACE_GET_PROYECTOS + METHOD_NAME_GET_PROYECTOS, envelope);
             response = (SoapPrimitive) envelope.getResponse();
-            Log.e(TAG,"responseProyecto" + response.toString());
+
             jsonArrayProyectos = new JSONArray(response.toString());
 
             if (jsonArrayProyectos == null) {
